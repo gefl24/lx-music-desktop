@@ -2,7 +2,7 @@ name: Build and Publish Docker Image
 
 on:
   push:
-    branches: [ "master", "main" ] # 或者是你的默认分支名
+    branches: [ "master", "main" ] # 触发分支
     tags: [ 'v*.*.*' ]
   workflow_dispatch: # 允许手动触发
 
@@ -21,7 +21,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 设置 QEMU (如果需要构建多架构镜像，如 ARM64)
+      # 设置 QEMU (支持多架构构建)
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
 
@@ -38,14 +38,21 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       # 提取元数据 (tags, labels)
+      # 修正点：增加对所有分支的 Tag 支持，并放宽 latest 的条件
       - name: Extract Docker metadata
         id: meta
         uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ env.IMAGE_NAME }}
           tags: |
-            type=raw,value=latest,enable=${{ github.ref == 'format("refs/heads/{0}", "master")' }}
+            # 自动使用分支名称作为 tag (例如: main, dev, feature-x)
+            type=ref,event=branch
+            # 自动使用 git tag (例如: v1.0.0)
             type=ref,event=tag
+            # 自动使用 commit sha (短 hash)
+            type=sha
+            # 如果是默认分支 (main 或 master)，额外打上 latest 标签
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' }}
 
       # 构建并推送镜像
       - name: Build and push Docker image
