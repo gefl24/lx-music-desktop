@@ -55,8 +55,10 @@ COPY . .
 RUN npx electron-builder install-app-deps
 
 # 7. 配置自动启动
-# 修正：去掉了 mkdir 命令，直接复制文件
-COPY lx-music.desktop /defaults/autostart/lx-music.desktop
-RUN chmod +x /defaults/autostart/lx-music.desktop
+# 修正：将 .desktop 文件复制到标准的 XDG 系统自动启动目录
+# 之前的 /defaults/autostart 在此镜像中是文件而非目录，会导致构建失败
+RUN mkdir -p /etc/xdg/autostart
+COPY lx-music.desktop /etc/xdg/autostart/lx-music.desktop
+RUN chmod 644 /etc/xdg/autostart/lx-music.desktop
 
-# 端口暴露由基础镜像处理
+# 端口暴露由基础镜像处理 (3000, 3001)
