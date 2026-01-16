@@ -1,63 +1,31 @@
-// server/index.js
 const express = require('express')
 const path = require('path')
 const bodyParser = require('body-parser')
 const cors = require('cors')
-
-// 引入原有的业务逻辑模块 (你需要将 src/main 下的核心逻辑剥离出来)
-// 注意：这部分工作量最大，你需要将 src/main/modules 下的逻辑适配为普通函数
-// const musicApi = require('../src/main/modules/musicApi') 
-// const dbService = require('../src/main/worker/dbService')
+const proxyRoute = require('./routes/proxy')
+const ipcRoute = require('./routes/ipc')
 
 const app = express()
 const PORT = process.env.PORT || 3000
 
+// 允许跨域
 app.use(cors())
-app.use(bodyParser.json({ limit: '10mb' }))
+// 支持大数据包 (如导入歌单)
+app.use(bodyParser.json({ limit: '50mb' }))
+app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }))
 
-// 1. 静态资源托管 (托管编译后的 Vue 前端)
+// 1. 静态资源托管 (托管 Vue 编译后的 dist 目录)
 app.use(express.static(path.join(__dirname, '../dist')))
 
-// 2. 核心 API 路由 (对应 IPC invoke)
-app.post('/api/invoke/:channel', async (req, res) => {
-  const channel = req.params.channel
-  const data = req.body
+// 2. API 路由
+app.use('/api/proxy', proxyRoute) // 处理跨域请求
+app.use('/api/ipc', ipcRoute)     // 处理 IPC 调用
 
-  try {
-    let result = null
-    
-    // 路由分发 (Routing)
-    switch (channel) {
-      case 'music_search':
-        // 调用原本的搜索逻辑
-        // result = await musicApi.search(data) 
-        break;
-      case 'list_get':
-        // 调用原本的数据库逻辑
-        // result = await dbService.getAllLists()
-        break;
-      case 'music_url':
-        // 最关键：获取音乐 URL
-        // Web 端无法直接跨域请求，必须由这里(Node)去请求第三方服务器
-        // result = await musicApi.getUrl(data)
-        break;
-      default:
-        console.warn('Unknown channel:', channel)
-        result = {}
-    }
-    
-    res.json(result)
-  } catch (error) {
-    console.error(error)
-    res.status(500).json({ error: error.message })
-  }
-})
-
-// 3. 处理所有其他路由请求，返回 index.html (SPA 必须)
+// 3. SPA 路由回退 (所有非 API 请求返回 index.html)
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, '../dist/index.html'))
 })
 
 app.listen(PORT, () => {
-  console.log(`LX Music Server running on port ${PORT}`)
+  console.log(`LX Music Server running at http://localhost:${PORT}`)
 })
