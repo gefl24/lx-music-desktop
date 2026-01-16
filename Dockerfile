@@ -1,49 +1,55 @@
-# 使用支持 Web 访问桌面的基础镜像 (包含 KasmVNC，支持音频)
-FROM ghcr.io/linuxserver/webtop:ubuntu-xfce
+# 基础镜像：包含 Ubuntu XFCE 桌面环境和 KasmVNC (Web 访问支持)
+FROM lscr.io/linuxserver/webtop:ubuntu-xfce
 
-# 设置环境变量
-ENV TITLE="LX Music Web" \
-    LC_ALL=zh_CN.UTF-8 \
-    LANG=zh_CN.UTF-8 \
-    LANGUAGE=zh_CN.UTF-8 \
-    NODE_ENV=production
+# 镜像元数据
+LABEL maintainer="gefl24"
 
-# 安装运行所需的依赖 (Node.js, 编译工具, 音频库, 字体)
-RUN apt-get update && \
+# 设置环境变量，避免交互式安装暂停
+ENV DEBIAN_FRONTEND=noninteractive \
+    NODE_ENV=production \
+    ELECTRON_IS_DEV=0
+
+# 1. 安装 Node.js 18.x 和运行 Electron 所需的系统依赖
+# 注意：Electron 需要 libnss3, libatk, libdrm 等库
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get update && \
     apt-get install -y --no-install-recommends \
-    curl \
-    gnupg \
+    nodejs \
     build-essential \
     python3 \
-    libasound2 \
-    libgbm-dev \
+    git \
     libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libgbm1 \
+    libasound2 \
+    libpangocairo-1.0-0 \
     libxss1 \
-    libxtst6 \
+    libgtk-3-0 \
+    libnotify4 \
     fonts-noto-cjk \
-    && curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# 设置工作目录
+# 2. 设置工作目录
 WORKDIR /app
 
-# 复制 package.json 和 lock 文件 (利用 Docker 缓存层)
+# 3. 复制依赖文件并安装
+# 需要重新编译 native 模块 (如 better-sqlite3) 以适应容器环境
 COPY package*.json ./
-
-# 安装项目依赖 (包括 Electron 和 Native 模块)
-# 注意：better-sqlite3 等模块需要重新编译以适应 Linux 环境
 RUN npm install --unsafe-perm
 
-# 复制所有源代码
+# 4. 复制项目所有源代码
 COPY . .
 
-# 添加启动脚本
-COPY start-lx.sh /defaults/autostart/start-lx.sh
-RUN chmod +x /defaults/autostart/start-lx.sh
+# 5. 配置自动启动
+# 我们将创建一个 .desktop 文件放到 XFCE 的自动启动目录中
+RUN mkdir -p /defaults/autostart
+COPY lx-music.desktop /defaults/autostart/lx-music.desktop
+RUN chmod +x /defaults/autostart/lx-music.desktop
 
-# 暴露 Web 端口 (Webtop 默认是 3000)
-EXPOSE 3000
+# 6. (可选) 清理构建工具以减小镜像体积
+# RUN apt-get remove -y build-essential python3 && apt-get autoremove -y
 
-# 容器启动时会自动运行 /init，并加载 /defaults/autostart 下的脚本
+# 端口由基础镜像暴露 (3000, 3001)
