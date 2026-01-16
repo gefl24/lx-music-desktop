@@ -7,42 +7,61 @@ import { defaultList, loveList, userLists } from '@renderer/store/list/state'
 import useImportTip from '@renderer/utils/compositions/useImportTip'
 import { dialog } from '@renderer/plugins/Dialog'
 
-
 export default () => {
   const t = useI18n()
   const showImportTip = useImportTip()
 
-  const handleExportList = (listInfo: LX.List.MyListInfo) => {
+  const handleExportList = async (listInfo: LX.List.MyListInfo) => {
     if (!listInfo) return
-    void openSaveDir({
+    
+    // 修复 1: 给 result 添加类型注解 (result: any)
+    openSaveDir({
       title: t('lists__export_part_desc'),
       defaultPath: `lx_list_part_${filterFileName(listInfo.name)}.lxmc`,
-    }).then(async result => {
-      if (result.canceled || !result.filePath) return
-      void window.lx.worker.main.saveLxConfigFile(result.filePath, {
-        type: 'playListPart_v2',
-        data: { ...toRaw(listInfo), list: toRaw(await getListMusics(listInfo.id)) },
-      })
+    }).then(async (result: any) => {
+      if (!result || result.canceled || !result.filePath) return
+      
+      // Web 兼容性处理: 检查 window.lx 是否存在
+      if (window.lx && window.lx.worker) {
+        void window.lx.worker.main.saveLxConfigFile(result.filePath, {
+          type: 'playListPart_v2',
+          data: { ...toRaw(listInfo), list: toRaw(await getListMusics(listInfo.id)) },
+        })
+      } else {
+        console.warn('Web版暂不支持直接导出文件到本地文件系统 (需要实现浏览器下载逻辑)')
+        // 你可以在这里实现一个浏览器下载 Blob 的逻辑来替代
+      }
     })
   }
+
   const handleImportList = (listInfo: LX.List.MyListInfo, index: number) => {
-    void showSelectDialog({
+    // 修复 2: 给 result 添加类型注解
+    showSelectDialog({
       title: t('lists__import_part_desc'),
       properties: ['openFile'],
       filters: [
         { name: 'Play List Part', extensions: ['json', 'lxmc'] },
         { name: 'All Files', extensions: ['*'] },
       ],
-    }).then(async result => {
-      if (result.canceled) return
+    }).then(async (result: any) => {
+      if (!result || result.canceled) return
       const filePath = result.filePaths[0]
       if (!filePath) return
+      
       let configData: any
       try {
-        configData = await window.lx.worker.main.readLxConfigFile(filePath)
+        // Web 兼容性处理
+        if (window.lx && window.lx.worker) {
+          configData = await window.lx.worker.main.readLxConfigFile(filePath)
+        } else {
+           console.warn('Web版暂不支持读取本地路径 (需改为 <input type="file"> 上传)')
+           return
+        }
       } catch (error) {
         return
       }
+
+      // ... 后续逻辑保持不变 ...
       let listData: LX.ConfigFile.MyListInfoPart['data']
       switch (configData.type) {
         case 'playListPart':
