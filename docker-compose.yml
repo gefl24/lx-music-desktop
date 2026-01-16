@@ -3,17 +3,11 @@ services:
   lx-music-web:
     build: .
     container_name: lx-music-web
-    security_opt:
-      - seccomp:unconfined # Electron 需要此权限
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Asia/Shanghai
-    volumes:
-      - ./data:/config # 持久化配置数据 (Webtop 配置)
-      - ./lx-data:/app/data # 持久化 LX Music 数据 (需根据代码调整数据保存路径)
+    restart: always
     ports:
-      - "3000:3000" # Web 访问端口
-      - "3001:3001" # HTTPS 端口 (可选)
-    shm_size: "1gb" # 防止 Electron 崩溃
-    restart: unless-stopped
+      - "3000:3000"
+    volumes:
+      # 挂载数据目录，确保数据库(sqlite)文件持久化
+      - ./data:/app/data
+    environment:
+      - PORT=3000
