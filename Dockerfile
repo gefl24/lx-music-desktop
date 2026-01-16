@@ -11,6 +11,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
 
 # 1. 安装 Node.js 18.x 和运行 Electron 所需的系统依赖
 # 注意：Electron 需要 libnss3, libatk, libdrm 等库
+# 1. 安装 Node.js 18.x 和运行 Electron 所需的系统依赖
+# 修正说明：Ubuntu 24.04 中 libasound2 已更名为 libasound2t64
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -23,7 +25,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     libatk-bridge2.0-0 \
     libcups2 \
     libgbm1 \
-    libasound2 \
+    libasound2t64 \
     libpangocairo-1.0-0 \
     libxss1 \
     libgtk-3-0 \
