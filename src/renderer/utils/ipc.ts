@@ -65,3 +65,12 @@ export const showSelectDialog = async (options: any): Promise<{ canceled: boolea
   console.warn('[Web Mode] showSelectDialog not supported directly. Please use HTML5 File Input.')
   return { canceled: true, filePaths: [] }
 }
+// src/renderer/utils/ipc.ts
+
+// ... 现有的其他导出 ...
+
+// 模拟桌面歌词进程通信 (Web 版暂不支持，留空防止报错)
+export const onNewDesktopLyricProcess = (callback: (params: { event: any }) => void) => {
+  console.warn('[Web Mode] Desktop Lyric process not supported.')
+  // 不执行 callback，或者你可以模拟一个假的 event
+}
