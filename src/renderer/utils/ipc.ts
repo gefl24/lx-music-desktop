@@ -53,3 +53,15 @@ export const minWindow = () => {}
 export const maxWindow = () => {}
 
 // ... 其他导出请保留原样，确保 import 该文件的组件不会报错
+// ... 原有代码 ...
+
+// Web 兼容性 Mock: 模拟 Electron 的 Dialog
+export const openSaveDir = async (options: any): Promise<{ canceled: boolean; filePath?: string }> => {
+  console.warn('[Web Mode] openSaveDir not supported directly. Please implement browser download.')
+  return { canceled: true }
+}
+
+export const showSelectDialog = async (options: any): Promise<{ canceled: boolean; filePaths: string[] }> => {
+  console.warn('[Web Mode] showSelectDialog not supported directly. Please use HTML5 File Input.')
+  return { canceled: true, filePaths: [] }
+}
