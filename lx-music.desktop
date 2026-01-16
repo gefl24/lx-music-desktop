@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=LX Music
+Exec=npm start -- --no-sandbox
+Path=/app
+Terminal=false
+StartupNotify=false
