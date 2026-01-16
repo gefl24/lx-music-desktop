@@ -40,7 +40,7 @@ WORKDIR /app
 # 3. 复制依赖文件并安装
 # 需要重新编译 native 模块 (如 better-sqlite3) 以适应容器环境
 COPY package*.json ./
-RUN npm install --unsafe-perm
+RUN npm install --unsafe-perm --production=false
 
 # 4. 复制项目所有源代码
 COPY . .
