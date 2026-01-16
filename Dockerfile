@@ -42,7 +42,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # 4. 安装项目依赖
-# 新增: npm install -g node-gyp (解决 "paths[0] undefined" 报错)
+# npm install -g node-gyp: 确保构建工具存在
 RUN npm config set registry https://registry.npmmirror.com && \
     npm install -g node-gyp && \
     npm install --unsafe-perm --production=false --legacy-peer-deps --ignore-scripts
@@ -51,11 +51,11 @@ RUN npm config set registry https://registry.npmmirror.com && \
 COPY . .
 
 # 6. 手动运行原生模块编译
-# 这一步将重新编译 better-sqlite3
+# 这一步之前已经成功通过
 RUN npx electron-builder install-app-deps
 
 # 7. 配置自动启动
-RUN mkdir -p /defaults/autostart
+# 修正：去掉了 mkdir 命令，直接复制文件
 COPY lx-music.desktop /defaults/autostart/lx-music.desktop
 RUN chmod +x /defaults/autostart/lx-music.desktop
 
