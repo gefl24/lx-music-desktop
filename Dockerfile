@@ -8,7 +8,6 @@ ENV NODE_ENV=production \
     PYTHON=/usr/bin/python3 \
     # 使用镜像源加速 Electron 下载
     ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/" \
-    ELECTRON_CUSTOM_DIR="{{ version }}" \
     PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 # 1. 安装系统依赖
@@ -42,7 +41,6 @@ WORKDIR /app
 COPY package*.json ./
 
 # 4. 安装项目依赖
-# npm install -g node-gyp: 确保构建工具存在
 RUN npm config set registry https://registry.npmmirror.com && \
     npm install -g node-gyp && \
     npm install --unsafe-perm --production=false --legacy-peer-deps --ignore-scripts
@@ -50,13 +48,18 @@ RUN npm config set registry https://registry.npmmirror.com && \
 # 5. 复制源代码
 COPY . .
 
-# 6. 手动运行原生模块编译
-# 这一步之前已经成功通过
+# 6. 构建应用 (编译 TS/Vue 到 dist 目录)
+# 这是必须的步骤，否则没有 dist/main.js 可供运行
+RUN npm run build:main && \
+    npm run build:renderer && \
+    npm run build:renderer-lyric && \
+    npm run build:renderer-scripts
+
+# 7. 手动运行原生模块编译
 RUN npx electron-builder install-app-deps
 
-# 7. 配置自动启动
-# 修正：将 .desktop 文件复制到标准的 XDG 系统自动启动目录
-# 之前的 /defaults/autostart 在此镜像中是文件而非目录，会导致构建失败
+# 8. 配置自动启动
+# 将 .desktop 文件复制到标准的 XDG 系统自动启动目录
 RUN mkdir -p /etc/xdg/autostart
 COPY lx-music.desktop /etc/xdg/autostart/lx-music.desktop
 RUN chmod 644 /etc/xdg/autostart/lx-music.desktop
