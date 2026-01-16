@@ -12,7 +12,9 @@ const getCurrentTime = () => {
 }
 
 let lrc: Lyric
-let desktopLyricPort: Electron.IpcRendererEvent['ports'][0] | null = null
+// 修复 1: 将 Electron 类型改为 Web 标准的 MessagePort | null
+let desktopLyricPort: MessagePort | null = null
+
 const analyserTools: {
   dataArray: Uint8Array
   bufferLength: number
@@ -87,7 +89,10 @@ export const init = () => {
     onPlay(line, text) {
       setText(text, Math.max(line, 0))
       setStatusText(text)
-      window.app_event.lyricLinePlay(text, line)
+      // Web 兼容性: 检查 window.app_event 是否存在
+      if (window.app_event) {
+        window.app_event.lyricLinePlay(text, line)
+      }
       // console.log(line, text)
     },
     onSetLyric(lines, offset) { // listening lyrics seting event
@@ -105,20 +110,20 @@ export const init = () => {
     // offset: 80,
   })
 
-  onNewDesktopLyricProcess(({ event }) => {
+  // 修复 2: 显式定义 event 参数类型为 any (模拟 Electron IPC 事件对象)
+  onNewDesktopLyricProcess(({ event }: { event: any }) => {
     console.log('onNewDesktopLyricProcess')
+    if (!event.ports) return 
     const [port] = event.ports
     desktopLyricPort = port
 
-    port.onmessage = ({ data }) => {
+    // 修复 3: 显式定义 data 参数类型为 MessageEvent
+    port.onmessage = ({ data }: MessageEvent) => {
       handleDesktopLyricMessage(data.action)
-      // The event data can be any serializable object (and the event could even
-      // carry other MessagePorts with it!)
-      // const result = doWork(event.data)
-      // port.postMessage(result)
     }
 
-    port.onmessageerror = (event) => {
+    // 修复 4: 显式定义 error 参数类型为 MessageEvent
+    port.onmessageerror = (event: MessageEvent) => {
       console.log('onmessageerror', event)
     }
   })
