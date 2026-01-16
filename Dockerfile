@@ -1,24 +1,26 @@
-# 基础镜像：包含 Ubuntu XFCE 桌面环境和 KasmVNC (Web 访问支持)
+# 基础镜像
 FROM lscr.io/linuxserver/webtop:ubuntu-xfce
 
-# 镜像元数据
-LABEL maintainer="gefl24"
+# 设置环境变量
+ENV NODE_ENV=production \
+    ELECTRON_IS_DEV=0 \
+    # 使用淘宝镜像源加速 Electron 下载，防止网络超时导致构建失败
+    ELECTRON_MIRROR="https://npmmirror.com/mirrors/electron/" \
+    ELECTRON_CUSTOM_DIR="{{ version }}" \
+    # 显式指定 Python 路径，帮助 node-gyp 找到它
+    PYTHON=/usr/bin/python3 \
+    PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# 设置环境变量，避免交互式安装暂停
-ENV DEBIAN_FRONTEND=noninteractive \
-    NODE_ENV=production \
-    ELECTRON_IS_DEV=0
-
-# 1. 安装 Node.js 18.x 和运行 Electron 所需的系统依赖
-# 注意：Electron 需要 libnss3, libatk, libdrm 等库
-# 1. 安装 Node.js 18.x 和运行 Electron 所需的系统依赖
-# 修正说明：Ubuntu 24.04 中 libasound2 已更名为 libasound2t64
+# 1. 安装系统依赖
+# 新增: python-is-python3 (解决 node-gyp 找不到 python 的报错)
+# 修改: libasound2t64 (适配 Ubuntu 24.04)
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get update && \
     apt-get install -y --no-install-recommends \
     nodejs \
     build-essential \
     python3 \
+    python-is-python3 \
     git \
     libnss3 \
     libatk1.0-0 \
@@ -37,21 +39,27 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
 # 2. 设置工作目录
 WORKDIR /app
 
-# 3. 复制依赖文件并安装
-# 需要重新编译 native 模块 (如 better-sqlite3) 以适应容器环境
+# 3. 复制依赖文件
 COPY package*.json ./
-RUN npm install --unsafe-perm --production=false
 
-# 4. 复制项目所有源代码
+# 4. 安装项目依赖
+# 策略修改：
+# 1. 设置 npm 镜像源加速
+# 2. --ignore-scripts: 先只下载包，不运行 postinstall (避免 electron-builder 在环境未就绪时报错)
+RUN npm config set registry https://registry.npmmirror.com && \
+    npm install --unsafe-perm --production=false --legacy-peer-deps --ignore-scripts
+
+# 5. 复制源代码
 COPY . .
 
-# 5. 配置自动启动
-# 我们将创建一个 .desktop 文件放到 XFCE 的自动启动目录中
+# 6. 手动运行原生模块编译
+# 这步是之前报错的地方，现在环境修复后应该能通过
+# 我们显式运行 electron-builder install-app-deps
+RUN npx electron-builder install-app-deps
+
+# 7. 配置自动启动
 RUN mkdir -p /defaults/autostart
 COPY lx-music.desktop /defaults/autostart/lx-music.desktop
 RUN chmod +x /defaults/autostart/lx-music.desktop
 
-# 6. (可选) 清理构建工具以减小镜像体积
-# RUN apt-get remove -y build-essential python3 && apt-get autoremove -y
-
-# 端口由基础镜像暴露 (3000, 3001)
+# 端口暴露由基础镜像处理
