@@ -8,7 +8,6 @@ module.exports = {
       '@': path.resolve(__dirname, '../src'),
       '@root': path.resolve(__dirname, '../'),
       '@common': path.resolve(__dirname, '../src/common'),
-      '@main': path.resolve(__dirname, '../src/main'),
       '@renderer': path.resolve(__dirname, '../src/renderer'),
       '@server': path.resolve(__dirname, '../src/server'),
     },
@@ -18,12 +17,12 @@ module.exports = {
       {
         test: /\.ts$/,
         use: 'ts-loader',
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /src\/main/],
       },
       {
         test: /\.js$/,
         use: 'babel-loader',
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /src\/main/],
       },
     ],
   },
