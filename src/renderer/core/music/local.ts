@@ -39,7 +39,7 @@ const getOtherSourceByLocal = async<T>(musicInfo: LX.Music.MusicInfoLocal, handl
   result = await getOtherSource(musicInfo)
   if (result.length) try { return await handler(result) } catch {}
   if (musicInfo.name.includes('-')) {
-    const [name, singer] = musicInfo.name.split('-').map(val => val.trim())
+    const [name, singer] = musicInfo.name.split('-').map((val: string) => val.trim())
     result = await getOtherSource({
       ...musicInfo,
       name,
@@ -58,7 +58,7 @@ const getOtherSourceByLocal = async<T>(musicInfo: LX.Music.MusicInfoLocal, handl
     fileName = fileName.substring(0, fileName.lastIndexOf('.'))
     if (fileName != musicInfo.name) {
       if (fileName.includes('-')) {
-        const [name, singer] = fileName.split('-').map(val => val.trim())
+          const [name, singer] = fileName.split('-').map((val: string) => val.trim())
         result = await getOtherSource({
           ...musicInfo,
           name,
