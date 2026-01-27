@@ -1,44 +1,3 @@
-// Mock modules
-const qualityList = {
-  value: {},
-}
-
-const assertApiSupport = () => true
-
-const musicSdk = {
-  findMusic: async() => [],
-  init: async() => {},
-  searchMusic: async() => [],
-  supportQuality: {},
-}
-
-const getStoreMusicUrl = async() => null
-const getStoreLyric = async() => ({
-  lyric: '',
-  tlyric: '',
-  rlyric: '',
-  lxlyric: '',
-})
-
-const appSetting = {
-  'player.isS2t': false,
-  'player.playQuality': '128k',
-}
-
-const langS2T = async(str: string) => str
-const toNewMusicInfo = (info: any) => info
-const toOldMusicInfo = (info: any) => info
-
-const requestMsg = {
-  tooManyRequests: 'tooManyRequests',
-}
-
-const apis = () => ({
-  getMusicUrl: () => ({ promise: Promise.resolve({ url: '' }) }),
-  getPic: () => Promise.resolve(''),
-  getLyric: () => ({ promise: Promise.resolve({ lyric: '', tlyric: '', rlyric: '', lxlyric: '' }) }),
-})
-
 // Type definitions
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
@@ -99,6 +58,47 @@ namespace LX {
     export type Type = string
   }
 }
+
+// Mock modules
+const qualityList = {
+  value: {},
+}
+
+const assertApiSupport = () => true
+
+const musicSdk = {
+  findMusic: async(searchMusicInfo: any) => [],
+  init: async() => {},
+  searchMusic: async() => [],
+  supportQuality: {},
+}
+
+const getStoreMusicUrl = async(musicInfo: any, quality: string) => null
+const getStoreLyric = async(musicInfo: any) => ({
+  lyric: '',
+  tlyric: '',
+  rlyric: '',
+  lxlyric: '',
+})
+
+const appSetting = {
+  'player.isS2t': false,
+  'player.playQuality': '128k',
+}
+
+const langS2T = async(str: string) => str
+const toNewMusicInfo = (info: any) => info
+const toOldMusicInfo = (info: any) => info
+
+const requestMsg = {
+  tooManyRequests: 'tooManyRequests',
+}
+
+const apis = (source: string) => ({
+  getMusicUrl: () => ({ promise: Promise.resolve({ url: '' }) }),
+  getPic: () => Promise.resolve(''),
+  getLyric: () => ({ promise: Promise.resolve({ lyric: '', tlyric: '', rlyric: '', lxlyric: '' }) }),
+})
 
 
 const getOtherSourcePromises = new Map()
@@ -166,7 +166,6 @@ export const getOtherSource = async(musicInfo: LX.Music.MusicInfo | LX.Download.
 
 export const buildLyricInfo = async(lyricInfo: MakeOptional<LX.Player.LyricInfo, 'rawlrcInfo'>): Promise<LX.Player.LyricInfo> => {
   if (!appSetting['player.isS2t']) {
-    // @ts-expect-error
     if (lyricInfo.rawlrcInfo) return lyricInfo
     return { ...lyricInfo, rawlrcInfo: { ...lyricInfo } }
   }
@@ -206,7 +205,6 @@ export const buildLyricInfo = async(lyricInfo: MakeOptional<LX.Player.LyricInfo,
     })
   }
 
-  // @ts-expect-error
   return lyricInfo.rawlrcInfo ? lyricInfo : { ...lyricInfo, rawlrcInfo: { ...lyricInfo } }
 }
 
