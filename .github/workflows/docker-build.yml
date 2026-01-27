@@ -1,4 +1,4 @@
-name: Docker Build and Push
+name: Docker Build
 
 on:
   push:
@@ -19,23 +19,14 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: your-dockerhub-username/lx-music-web
-
-      - name: Build and push
+      - name: Build Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          push: false
+          tags: lx-music-web:latest
+          labels: |
+            org.opencontainers.image.title=LX Music Web
+            org.opencontainers.image.description=LX Music Desktop as a Docker containerized web application
+            org.opencontainers.image.version=${{ github.sha }}
           platforms: linux/amd64,linux/arm64
