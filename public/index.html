@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LX Music Web</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+        }
+        h2 {
+            color: #666;
+            margin-top: 0;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+        li {
+            padding: 10px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        li:last-child {
+            border-bottom: none;
+        }
+        .song-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .song-info {
+            flex: 1;
+        }
+        .song-name {
+            font-weight: bold;
+        }
+        .song-singer {
+            color: #666;
+            font-size: 14px;
+        }
+        .btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        .error {
+            text-align: center;
+            padding: 20px;
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>LX Music Web</h1>
+        
+        <div class="section">
+            <h2>排行榜</h2>
+            <div id="leaderboard-list" class="loading">加载中...</div>
+        </div>
+        
+        <div class="section">
+            <h2>歌单</h2>
+            <div id="songlist-list" class="loading">加载中...</div>
+        </div>
+    </div>
+    
+    <script>
+        // 加载排行榜数据
+        fetch('/api/leaderboard')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const leaderboardList = document.getElementById('leaderboard-list');
+                    leaderboardList.innerHTML = '';
+                    
+                    const ul = document.createElement('ul');
+                    data.data.forEach(board => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <div class="song-item">
+                                <div class="song-info">
+                                    <div class="song-name">${board.name}</div>
+                                    <div class="song-singer">${board.source}</div>
+                                </div>
+                                <button class="btn" onclick="loadLeaderboardDetail('${board.id}')">查看详情</button>
+                            </div>
+                        `;
+                        ul.appendChild(li);
+                    });
+                    leaderboardList.appendChild(ul);
+                } else {
+                    document.getElementById('leaderboard-list').innerHTML = '<div class="error">加载失败</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('leaderboard-list').innerHTML = '<div class="error">加载失败</div>';
+            });
+        
+        // 加载歌单数据
+        fetch('/api/songList')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const songlistList = document.getElementById('songlist-list');
+                    songlistList.innerHTML = '';
+                    
+                    const ul = document.createElement('ul');
+                    data.data.forEach(list => {
+                        const li = document.createElement('li');
+                        li.innerHTML = `
+                            <div class="song-item">
+                                <div class="song-info">
+                                    <div class="song-name">${list.name}</div>
+                                    <div class="song-singer">${list.source} - ${list.count}首歌曲</div>
+                                </div>
+                                <button class="btn" onclick="loadSonglistDetail('${list.id}')">查看详情</button>
+                            </div>
+                        `;
+                        ul.appendChild(li);
+                    });
+                    songlistList.appendChild(ul);
+                } else {
+                    document.getElementById('songlist-list').innerHTML = '<div class="error">加载失败</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('songlist-list').innerHTML = '<div class="error">加载失败</div>';
+            });
+        
+        // 加载排行榜详情
+        function loadLeaderboardDetail(id) {
+            fetch(`/api/leaderboard/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const leaderboardList = document.getElementById('leaderboard-list');
+                        leaderboardList.innerHTML = '';
+                        
+                        const h3 = document.createElement('h3');
+                        h3.textContent = '排行榜详情';
+                        leaderboardList.appendChild(h3);
+                        
+                        const ul = document.createElement('ul');
+                        data.data.list.forEach(song => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                                <div class="song-item">
+                                    <div class="song-info">
+                                        <div class="song-name">${song.name}</div>
+                                        <div class="song-singer">${song.singer} - ${song.album}</div>
+                                    </div>
+                                    <button class="btn">播放</button>
+                                </div>
+                            `;
+                            ul.appendChild(li);
+                        });
+                        leaderboardList.appendChild(ul);
+                        
+                        const backBtn = document.createElement('button');
+                        backBtn.className = 'btn';
+                        backBtn.textContent = '返回排行榜列表';
+                        backBtn.onclick = loadLeaderboardList;
+                        leaderboardList.appendChild(backBtn);
+                    }
+                });
+        }
+        
+        // 加载歌单详情
+        function loadSonglistDetail(id) {
+            fetch(`/api/songList/${id}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const songlistList = document.getElementById('songlist-list');
+                        songlistList.innerHTML = '';
+                        
+                        const h3 = document.createElement('h3');
+                        h3.textContent = '歌单详情';
+                        songlistList.appendChild(h3);
+                        
+                        const ul = document.createElement('ul');
+                        data.data.list.forEach(song => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `
+                                <div class="song-item">
+                                    <div class="song-info">
+                                        <div class="song-name">${song.name}</div>
+                                        <div class="song-singer">${song.singer} - ${song.album}</div>
+                                    </div>
+                                    <button class="btn">播放</button>
+                                </div>
+                            `;
+                            ul.appendChild(li);
+                        });
+                        songlistList.appendChild(ul);
+                        
+                        const backBtn = document.createElement('button');
+                        backBtn.className = 'btn';
+                        backBtn.textContent = '返回歌单列表';
+                        backBtn.onclick = loadSonglistList;
+                        songlistList.appendChild(backBtn);
+                    }
+                });
+        }
+        
+        // 返回排行榜列表
+        function loadLeaderboardList() {
+            location.reload();
+        }
+        
+        // 返回歌单列表
+        function loadSonglistList() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
