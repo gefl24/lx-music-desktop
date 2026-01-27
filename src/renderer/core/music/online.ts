@@ -7,6 +7,7 @@ const saveLyric = async(musicInfo: any, lyricInfo: any) => {}
 const saveMusicUrl = async(musicInfo: any, quality: string, url: string) => {}
 const getStoreMusicUrl = async(musicInfo: any, quality: string) => null
 
+// Import types from utils
 import {
   buildLyricInfo,
   getPlayQuality,
@@ -15,6 +16,22 @@ import {
   handleGetOnlinePicUrl,
   getCachedLyricInfo,
 } from './utils'
+
+// Local type definitions for compatibility
+type MusicInfoOnline = any
+type Quality = any
+type PlayerLyricInfo = any
+
+// Mock LX namespace for compatibility
+declare namespace LX {
+  namespace Music {
+    type MusicInfoOnline = any
+  }
+  namespace Player {
+    type LyricInfo = any
+  }
+  type Quality = any
+}
 
 /* export const setMusicUrl = ({ musicInfo, type, url }: {
   musicInfo: LX.Music.MusicInfo
