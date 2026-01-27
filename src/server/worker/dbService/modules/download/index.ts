@@ -4,10 +4,13 @@ export const getList = async () => {
   const db = getDB()
   const stmt = db.prepare('SELECT * FROM download_list ORDER BY add_time DESC')
   const rows = stmt.all()
-  return rows.map(row => ({
-    ...row,
-    music_info: JSON.parse(row.music_info)
-  }))
+  return rows.map(row => {
+    const typedRow = row as { [key: string]: any }
+    return {
+      ...typedRow,
+      music_info: JSON.parse(typedRow.music_info)
+    }
+  })
 }
 
 export const add = async (items: any[]) => {
