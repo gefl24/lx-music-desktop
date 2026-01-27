@@ -45,13 +45,7 @@ const useKeyEvent = ({ handleSelectAllData, listRef }: {
     handleSelectAllData()
   }
 
-  onBeforeUnmount(() => {
-    window.key_event.off('key_shift_down', handle_key_shift_down)
-    window.key_event.off('key_shift_up', handle_key_shift_up)
-    window.key_event.off('key_mod_down', handle_key_mod_down)
-    window.key_event.off('key_mod_up', handle_key_mod_up)
-    window.key_event.off('key_mod+a_down', handle_key_mod_a_down)
-  })
+  onBeforeUnmount()
   window.key_event.on('key_shift_down', handle_key_shift_down)
   window.key_event.on('key_shift_up', handle_key_shift_up)
   window.key_event.on('key_mod_down', handle_key_mod_down)
@@ -68,7 +62,7 @@ export default ({ props, listRef }: {
   }
   listRef: Ref<any>
 }) => {
-  const selectedList = ref<LX.Music.MusicInfoOnline[]>([])
+  const selectedList = ref([])
   let lastSelectIndex = -1
   const listItemHeight = computed(() => {
     return Math.ceil((isFullscreen.value ? getFontSizeWithScreen() : appSetting['common.fontSize']) * 2.3)
@@ -117,7 +111,7 @@ export default ({ props, listRef }: {
     }
   }
 
-  watch(() => props.list, removeAllSelect)
+  watch()
 
   return {
     selectedList,
