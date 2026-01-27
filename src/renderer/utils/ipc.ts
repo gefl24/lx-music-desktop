@@ -27,11 +27,20 @@ type UpdateDownloadedEvent = {
   updateInfo: UpdateInfo
 }
 
+// For web version, define mock Electron namespace
+declare namespace Electron {
+  type OpenDialogOptions = any
+  type OpenDialogReturnValue = any
+  type SaveDialogOptions = any
+  type SaveDialogReturnValue = any
+  type Rectangle = any
+}
+
 // For web version, we'll provide empty implementations for IPC functions
-const rendererSend = () => {}
-const rendererInvoke = () => Promise.resolve()
-const rendererOn = () => () => {}
-const rendererOff = () => {}
+const rendererSend = (...args: any[]) => {}
+const rendererInvoke = <T = any, P = any>(...args: any[]): Promise<T> => Promise.resolve() as Promise<T>
+const rendererOn = (...args: any[]) => () => {}
+const rendererOff = (...args: any[]) => {}
 
 // IPC event names
 const HOTKEY_RENDERER_EVENT_NAME = {
@@ -66,6 +75,8 @@ const WIN_MAIN_RENDERER_EVENT_NAME = {
   set_lyric_info: 'win_main_set_lyric_info',
   get_lyric_info: 'win_main_get_lyric_info',
   player_status: 'win_main_player_status',
+  player_action_on_button_click: 'win_main_player_action_on_button_click',
+  player_action_set_buttons: 'win_main_player_action_set_buttons',
   open_api_action: 'win_main_open_api_action',
   save_data: 'win_main_save_data',
   get_data: 'win_main_get_data',
