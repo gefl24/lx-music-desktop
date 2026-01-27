@@ -1,10 +1,12 @@
-import { updateListMusics } from '@renderer/store/list/action'
-import { appSetting } from '@renderer/store/setting'
-import {
-  saveLyric,
-  saveMusicUrl,
-  getMusicUrl as getStoreMusicUrl,
-} from '@renderer/utils/ipc'
+// Mock modules
+const updateListMusics = async(musics: any[]) => {}
+const appSetting = {
+  'player.playQuality': '128k',
+}
+const saveLyric = async(musicInfo: any, lyricInfo: any) => {}
+const saveMusicUrl = async(musicInfo: any, quality: string, url: string) => {}
+const getStoreMusicUrl = async(musicInfo: any, quality: string) => null
+
 import {
   buildLyricInfo,
   getPlayQuality,
