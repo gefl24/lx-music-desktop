@@ -5,10 +5,7 @@ const del = require('del')
 const webpack = require('webpack')
 const Spinnies = require('spinnies')
 
-const mainConfig = './main/webpack.config.prod'
 const rendererConfig = './renderer/webpack.config.prod'
-const rendererLyricConfig = './renderer-lyric/webpack.config.prod'
-const rendererScriptConfig = './renderer-scripts/webpack.config.prod'
 const serverConfig = './server/webpack.config.prod'
 
 const errorLog = chalk.bgRed.white(' ERROR ') + ' '
@@ -22,61 +19,25 @@ function build() {
   del.sync(['dist/**', 'build/**'])
 
   const spinners = new Spinnies({ color: 'blue' })
-  spinners.add('main', { text: 'main building' })
   spinners.add('renderer', { text: 'renderer building' })
-  spinners.add('renderer-lyric', { text: 'renderer-lyric building' })
-  spinners.add('renderer-scripts', { text: 'renderer-scripts building' })
   spinners.add('server', { text: 'server building' })
   let results = ''
 
-  // m.on('success', () => {
-  //   process.stdout.write('\x1B[2J\x1B[0f')
-  //   console.log(`\n\n${results}`)
-  //   console.log(`${okayLog}take it away ${chalk.yellow('`electron-builder`')}\n`)
-  //   process.exit()
-  // })
   function handleSuccess() {
     process.stdout.write('\x1B[2J\x1B[0f')
     console.log(`\n\n${results}`)
-    console.log(`${okayLog}take it away ${chalk.yellow('`electron-builder`')}\n`)
+    console.log(`${okayLog}Build completed successfully!\n`)
     console.timeEnd('build')
     process.exit()
   }
 
   Promise.all([
-    pack(mainConfig).then(result => {
-      results += result + '\n\n'
-      spinners.succeed('main', { text: 'main build success!' })
-    }).catch(err => {
-      spinners.fail('main', { text: 'main build fail :(' })
-      console.log(`\n  ${errorLog}failed to build main process`)
-      console.error(`\n${err}\n`)
-      process.exit(1)
-    }),
     pack(rendererConfig).then(result => {
       results += result + '\n\n'
       spinners.succeed('renderer', { text: 'renderer build success!' })
     }).catch(err => {
       spinners.fail('renderer', { text: 'renderer build fail :(' })
       console.log(`\n  ${errorLog}failed to build renderer process`)
-      console.error(`\n${err}\n`)
-      process.exit(1)
-    }),
-    pack(rendererLyricConfig).then(result => {
-      results += result + '\n\n'
-      spinners.succeed('renderer-lyric', { text: 'renderer-lyric build success!' })
-    }).catch(err => {
-      spinners.fail('renderer-lyric', { text: 'renderer-lyric build fail :(' })
-      console.log(`\n  ${errorLog}failed to build renderer-lyric process`)
-      console.error(`\n${err}\n`)
-      process.exit(1)
-    }),
-    pack(rendererScriptConfig).then(result => {
-      results += result + '\n\n'
-      spinners.succeed('renderer-scripts', { text: 'renderer-scripts build success!' })
-    }).catch(err => {
-      spinners.fail('renderer-scripts', { text: 'renderer-scripts build fail :(' })
-      console.log(`\n  ${errorLog}failed to build renderer-scripts process`)
       console.error(`\n${err}\n`)
       process.exit(1)
     }),
