@@ -17,6 +17,22 @@ import {
   getOtherSource,
 } from './utils'
 
+// Local type definitions for compatibility
+type MusicInfoLocal = any
+type MusicInfoOnline = any
+type PlayerLyricInfo = any
+
+// Mock LX namespace for compatibility
+declare namespace LX {
+  namespace Music {
+    type MusicInfoLocal = any
+    type MusicInfoOnline = any
+  }
+  namespace Player {
+    type LyricInfo = any
+  }
+}
+
 
 const getOtherSourceByLocal = async<T>(musicInfo: LX.Music.MusicInfoLocal, handler: (infos: LX.Music.MusicInfoOnline[]) => Promise<T>) => {
   let result: LX.Music.MusicInfoOnline[] = []
