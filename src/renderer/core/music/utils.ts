@@ -158,14 +158,14 @@ export const getOtherSource = async(musicInfo: MusicInfo | DownloadListItem, isR
   }
   if (getOtherSourcePromises.has(key)) return getOtherSourcePromises.get(key)
 
-  const promise = new Promise<LX.Music.MusicInfoOnline[]>((resolve, reject) => {
+  const promise = new Promise<MusicInfoOnline[]>((resolve, reject) => {
     let timeout: null | NodeJS.Timeout = setTimeout(() => {
       timeout = null
       reject(new Error('find music timeout'))
     }, 15_000)
     musicSdk.findMusic(searchMusicInfo).then((otherSource) => {
       if (otherSourceCache.size > 10) otherSourceCache.clear()
-      const source = otherSource.map(toNewMusicInfo) as LX.Music.MusicInfoOnline[]
+      const source = otherSource.map(toNewMusicInfo) as MusicInfoOnline[]
       otherSourceCache.set(musicInfo, source)
       resolve(source)
     }).catch(reject).finally(() => {
@@ -300,7 +300,7 @@ export const getOnlineOtherSourceLyricByLocal = async(musicInfo: MusicInfoLocal,
     reqPromise = Promise.reject(err)
   }
 
-  return reqPromise.then((lyricInfo: LX.Music.LyricInfo) => {
+  return reqPromise.then((lyricInfo: MusicLyricInfo) => {
     return { lyricInfo, isFromCache: false }
   })
 }
