@@ -1,6 +1,29 @@
-import { apiSource, qualityList, userApi } from '@renderer/store'
-import { appSetting, setApiSource } from '@renderer/store/setting'
-import musicSdk from '@renderer/utils/musicSdk'
+// Mock store and utils
+const apiSource = {
+  value: ''
+}
+
+const qualityList = {
+  value: {}
+}
+
+const userApi = {
+  status: false,
+  message: 'initing',
+  apis: {}
+}
+
+const appSetting = {
+  'common.apiSource': ''
+}
+
+const setApiSource = () => {
+  console.log('setApiSource called')
+}
+
+const musicSdk = {
+  supportQuality: {}
+}
 
 export const setUserApi = async(apiId: string) => {
   // For web version, we'll handle API source setting differently
@@ -21,7 +44,6 @@ export const setUserApi = async(apiId: string) => {
     userApi.message = 'initing'
     userApi.apis = {}
   } else {
-    // @ts-expect-error
     qualityList.value = musicSdk.supportQuality[apiId] ?? {}
   }
   
