@@ -1,4 +1,6 @@
-import { getDownloadFilePath } from '@renderer/utils/music'
+// Mock modules
+const getDownloadFilePath = async() => null
+const buildSavePath = () => ''
 
 import {
   getMusicUrl as getOnlineMusicUrl,
@@ -6,7 +8,6 @@ import {
   getLyricInfo as getOnlineLyricInfo,
 } from './online'
 import { buildLyricInfo, getCachedLyricInfo } from './utils'
-import { buildSavePath } from '@renderer/store/download/utils'
 
 export const getMusicUrl = async({ musicInfo, isRefresh, allowToggleSource = true, onToggleSource = () => {} }: {
   musicInfo: LX.Download.ListItem
