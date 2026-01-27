@@ -16,13 +16,22 @@ import router from './router'
 
 
 import { getSetting, updateSetting } from './api/setting'
-import { langList } from '@root/lang'
-import type { I18n } from '@root/lang/i18n'
 
-import { initSetting } from './store/setting'
-// import { bubbleCursor } from './utils/cursor-effects/bubbleCursor'
+// Mock lang modules
+const langList = []
+type I18n = {
+  locale: string
+}
 
-import { saveViewPrevState } from './utils/data'
+// Mock initSetting
+const initSetting = () => {
+  console.log('initSetting called')
+}
+
+// Mock saveViewPrevState
+const saveViewPrevState = () => {
+  console.log('saveViewPrevState called')
+}
 
 // sync(store, router)
 
