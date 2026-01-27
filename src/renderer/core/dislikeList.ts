@@ -11,10 +11,10 @@ const rendererOff = () => {}
 const rendererOn = () => {}
 
 const action = {
-  initDislikeInfo: () => {},
-  hasDislike: () => false,
-  addDislikeInfo: () => {},
-  overwirteDislikeInfo: () => {},
+  initDislikeInfo: (info: any) => {},
+  hasDislike: (info: any) => false,
+  addDislikeInfo: (info: any) => {},
+  overwirteDislikeInfo: (info: any) => {},
   clearDislikeInfo: () => {},
 }
 
