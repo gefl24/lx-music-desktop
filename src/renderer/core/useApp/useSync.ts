@@ -1,11 +1,63 @@
-import { markRaw, onBeforeUnmount } from '@common/utils/vueTools'
-import { onSyncAction, sendSyncAction } from '@renderer/utils/ipc'
-import { sync } from '@renderer/store'
-import { appSetting } from '@renderer/store/setting'
-import { SYNC_CODE } from '@common/constants_sync'
+// For web version, we'll provide mock implementations
+const markRaw = (value: any) => value
+const onBeforeUnmount = (callback: () => void) => {
+  // No-op for web version
+}
+
+// Mock sync store
+const sync = {
+  enable: false,
+  mode: 'server' as const,
+  isShowSyncMode: false,
+  isShowAuthCodeModal: false,
+  deviceName: '',
+  type: 'list' as const,
+  server: {
+    port: '',
+    status: {
+      status: false,
+      message: '',
+      address: [],
+      code: '',
+      devices: [],
+    },
+  },
+  client: {
+    host: '',
+    status: {
+      status: false,
+      message: '',
+      address: [],
+    },
+  },
+}
+
+// Mock app setting
+const appSetting = {
+  'sync.enable': false,
+  'sync.mode': 'server' as const,
+  'sync.server.port': '',
+  'sync.client.host': '',
+}
+
+// Mock SYNC_CODE
+const SYNC_CODE = {
+  missingAuthCode: 'missingAuthCode',
+  authFailed: 'authFailed',
+}
+
+// Mock IPC functions
+const onSyncAction = (listener: (data: { params: any }) => void) => {
+  // Return a function to remove the listener (no-op for web)
+  return () => {}
+}
+
+const sendSyncAction = (action: any) => {
+  return Promise.resolve()
+}
 
 export default () => {
-  const handleSyncList = (event: LX.Sync.SyncMainWindowActions) => {
+  const handleSyncList = (event: any) => {
     // console.log(event)
     switch (event.action) {
       case 'select_mode':
@@ -34,7 +86,7 @@ export default () => {
     }
   }
 
-  const rSyncAction = onSyncAction(({ params }) => {
+  const rSyncAction = onSyncAction(({ params }: { params: any }) => {
     handleSyncList(params)
   })
 
@@ -57,7 +109,7 @@ export default () => {
                 enable: appSetting['sync.enable'],
                 port: appSetting['sync.server.port'],
               },
-            }).catch(err => {
+            }).catch((err: any) => {
               console.log(err)
             })
           }
@@ -70,7 +122,7 @@ export default () => {
                 enable: appSetting['sync.enable'],
                 host: appSetting['sync.client.host'],
               },
-            }).catch(err => {
+            }).catch((err: any) => {
               console.log(err)
             })
           }
