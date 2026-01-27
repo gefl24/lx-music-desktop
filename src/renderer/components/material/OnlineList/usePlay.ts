@@ -34,25 +34,25 @@ export default ({ selectedList, props, removeAllSelect, emit }: {
 
   const handlePlayMusic = async(index: number, single: boolean) => {
     let targetSong = props.list[index]
-    const defaultListMusics = await getListMusics(defaultList.id)
+    const defaultListMusics = await getListMusics()
     if (selectedList.value.length && !single) {
-      await addListMusics(defaultList.id, [...selectedList.value])
+      await addListMusics()
       removeAllSelect()
     } else {
-      await addListMusics(defaultList.id, [targetSong])
+      await addListMusics()
     }
     let targetIndex = defaultListMusics.findIndex((s: any) => s.id === targetSong.id)
     if (targetIndex > -1) {
-      playList(defaultList.id, targetIndex)
+      playList()
     }
   }
 
   const handlePlayMusicLater = (index: number, single: boolean) => {
     if (selectedList.value.length && !single) {
-      addTempPlayList(selectedList.value.map((s: any) => ({ listId: LIST_IDS.PLAY_LATER, musicInfo: s })))
+      addTempPlayList()
       removeAllSelect()
     } else {
-      addTempPlayList([{ listId: LIST_IDS.PLAY_LATER, musicInfo: props.list[index] }])
+      addTempPlayList()
     }
   }
 
@@ -66,7 +66,7 @@ export default ({ selectedList, props, removeAllSelect, emit }: {
       return
     }
     if (appSetting['list.isClickPlayList']) {
-      emit('play-list', index)
+      emit('play-list')
     } else {
       void handlePlayMusic(index, true)
     }
