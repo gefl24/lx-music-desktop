@@ -34,7 +34,7 @@ export const setUserApi = async(apiId: string) => {
   
   // Update the app setting if needed
   if (apiId != appSetting['common.apiSource']) {
-    setApiSource(apiId)
+    setApiSource()
   }
   
   // Initialize quality list and user API state
@@ -44,11 +44,11 @@ export const setUserApi = async(apiId: string) => {
     userApi.message = 'initing'
     userApi.apis = {}
   } else {
-    qualityList.value = musicSdk.supportQuality[apiId] ?? {}
+    qualityList.value = {}
   }
   
   // Resolve the API init promise
-  if (!window.lx.apiInitPromise[1]) {
+  if (window.lx?.apiInitPromise?.[2]) {
     window.lx.apiInitPromise[2](true)
   }
 }
