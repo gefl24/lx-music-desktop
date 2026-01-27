@@ -1,8 +1,55 @@
-import { onBeforeUnmount } from '@common/utils/vueTools'
-import { getDuration, getPlaybackRate, getCurrentTime } from '@renderer/plugins/player'
-import { isPlay, musicInfo, playMusicInfo } from '@renderer/store/player/state'
-import { playProgress } from '@renderer/store/player/playProgress'
-import { pause, play, playNext, playPrev, stop } from '@renderer/core/player'
+// For web version, we'll provide mock implementations
+const onBeforeUnmount = (callback: () => void) => {
+  // No-op for web version
+}
+
+// Mock player plugins
+const getDuration = () => 0
+const getPlaybackRate = () => 1
+const getCurrentTime = () => 0
+
+// Mock player store
+const isPlay = {
+  value: false
+}
+
+const musicInfo = {
+  id: null,
+  name: '',
+  singer: '',
+  album: '',
+  pic: '',
+}
+
+const playMusicInfo = null
+
+const playProgress = {
+  nowPlayTime: 0,
+  maxPlayTime: 0,
+}
+
+// Mock player functions
+const pause = () => {
+  console.log('pause called')
+}
+
+const play = () => {
+  console.log('play called')
+}
+
+const playNext = () => {
+  console.log('playNext called')
+  return Promise.resolve()
+}
+
+const playPrev = () => {
+  console.log('playPrev called')
+  return Promise.resolve()
+}
+
+const stop = () => {
+  console.log('stop called')
+}
 
 export default () => {
   // 创建一个空白音频以保持对 Media Session 的注册
