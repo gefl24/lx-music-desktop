@@ -18,19 +18,23 @@ import router from './router'
 import { getSetting, updateSetting } from './api/setting'
 
 // Mock lang modules
-const langList = []
+interface LangModule {
+  locale: string
+  alternate: string
+}
+const langList: LangModule[] = []
 type I18n = {
   locale: string
 }
 
 // Mock initSetting
-const initSetting = () => {
-  console.log('initSetting called')
+const initSetting = (setting: any) => {
+  console.log('initSetting called with setting:', setting)
 }
 
 // Mock saveViewPrevState
-const saveViewPrevState = () => {
-  console.log('saveViewPrevState called')
+const saveViewPrevState = (state: any) => {
+  console.log('saveViewPrevState called with state:', state)
 }
 
 // sync(store, router)
