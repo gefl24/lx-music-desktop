@@ -1,7 +1,22 @@
-// import { toRaw } from '@common/utils/vueTools'
-import { DISLIKE_EVENT_NAME } from '@common/ipcNames'
-import { rendererInvoke, rendererOff, rendererOn } from '@common/rendererIpc'
-import { action } from '@renderer/store/dislikeList'
+// Mock modules
+const DISLIKE_EVENT_NAME = {
+  get_dislike_music_infos: 'get_dislike_music_infos',
+  add_dislike_music_infos: 'add_dislike_music_infos',
+  overwrite_dislike_music_infos: 'overwrite_dislike_music_infos',
+  clear_dislike_music_infos: 'clear_dislike_music_infos',
+}
+
+const rendererInvoke = () => Promise.resolve()
+const rendererOff = () => {}
+const rendererOn = () => {}
+
+const action = {
+  initDislikeInfo: () => {},
+  hasDislike: () => false,
+  addDislikeInfo: () => {},
+  overwirteDislikeInfo: () => {},
+  clearDislikeInfo: () => {},
+}
 
 
 export const initDislikeInfo = async() => {
