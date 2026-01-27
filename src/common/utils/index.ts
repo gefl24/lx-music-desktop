@@ -1,4 +1,11 @@
-import log from 'electron-log/node'
+// For web version, we'll provide mock implementations
+const log = {
+  info: console.log,
+  warn: console.warn,
+  error: console.error,
+  debug: console.debug,
+  verbose: console.log,
+}
 
 
 export const isLinux = process.platform == 'linux'
