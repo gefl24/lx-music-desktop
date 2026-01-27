@@ -18,4 +18,15 @@
     //   "@root/*": ["./*"],
     // },
   },
+  "include": [
+    "src/renderer/**/*",
+    "src/server/**/*",
+    "src/common/**/*",
+    "src/static/**/*"
+  ],
+  "exclude": [
+    "src/main/**/*",
+    "src/renderer-lyric/**/*",
+    "node_modules"
+  ]
 }
