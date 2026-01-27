@@ -10,15 +10,12 @@ const { mergeCSSLoader } = require('../utils')
 const isDev = process.env.NODE_ENV === 'development'
 
 module.exports = {
-  target: 'electron-renderer',
+  target: 'web',
   entry: {
     renderer: path.join(__dirname, '../../src/renderer/main.ts'),
   },
   output: {
     filename: '[name].js',
-    library: {
-      type: 'commonjs2',
-    },
     path: path.join(__dirname, '../../dist'),
     publicPath: '',
   },
@@ -37,7 +34,7 @@ module.exports = {
     rules: [
       {
         test: /\.tsx?$/,
-        exclude: /node_modules/,
+        exclude: [/node_modules/, /src\/main/],
         use: {
           loader: 'ts-loader',
           options: {
