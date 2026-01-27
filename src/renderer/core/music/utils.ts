@@ -327,7 +327,7 @@ type TryQualityType = typeof TRY_QUALITYS_LIST[number]
 export const getPlayQuality = (highQuality: Quality, musicInfo: MusicInfoOnline): Quality => {
   let type: Quality = '128k'
   if (TRY_QUALITYS_LIST.includes(highQuality as TryQualityType)) {
-    let list = qualityList.value[musicInfo.source]
+    let list = (qualityList.value as any)[musicInfo.source]
 
     let t = TRY_QUALITYS_LIST
       .slice(TRY_QUALITYS_LIST.indexOf(highQuality as TryQualityType))
@@ -358,8 +358,8 @@ export const getOnlineOtherSourceMusicUrl = async({ musicInfos, quality, onToggl
   while (musicInfo = (musicInfos.shift()!)) {
     if (retryedSource.includes(musicInfo.source)) continue
     retryedSource.push(musicInfo.source)
-    if (!assertApiSupport(musicInfo.source)) continue
-    itemQuality = quality ?? getPlayQuality(appSetting['player.playQuality'], musicInfo)
+    if (!assertApiSupport()) continue
+    itemQuality = quality ?? getPlayQuality(appSetting['player.playQuality'] as Quality, musicInfo)
     if (!musicInfo.meta._qualitys[itemQuality]) continue
 
     console.log('try toggle to: ', musicInfo.source, musicInfo.name, musicInfo.singer, musicInfo.interval)
@@ -373,7 +373,7 @@ export const getOnlineOtherSourceMusicUrl = async({ musicInfos, quality, onToggl
 
   let reqPromise
   try {
-    reqPromise = musicSdk[musicInfo.source].getMusicUrl(toOldMusicInfo(musicInfo), itemQuality).promise
+    reqPromise = (musicSdk as any)[musicInfo.source].getMusicUrl(toOldMusicInfo(musicInfo), itemQuality).promise
   } catch (err: any) {
     reqPromise = Promise.reject(err)
   }
@@ -406,11 +406,11 @@ export const handleGetOnlineMusicUrl = async({ musicInfo, quality, onToggleSourc
 }> => {
   if (!await window.lx.apiInitPromise[0]) throw new Error('source init failed')
   // console.log(musicInfo.source)
-  const targetQuality = quality ?? getPlayQuality(appSetting['player.playQuality'], musicInfo)
+  const targetQuality = quality ?? getPlayQuality(appSetting['player.playQuality'] as Quality, musicInfo)
 
   let reqPromise
   try {
-    reqPromise = musicSdk[musicInfo.source].getMusicUrl(toOldMusicInfo(musicInfo), targetQuality).promise
+    reqPromise = (musicSdk as any)[musicInfo.source].getMusicUrl(toOldMusicInfo(musicInfo), targetQuality).promise
   } catch (err: any) {
     reqPromise = Promise.reject(err)
   }
@@ -464,7 +464,7 @@ export const getOnlineOtherSourcePicUrl = async({ musicInfos, onToggleSource, is
 
   let reqPromise
   try {
-    reqPromise = musicSdk[musicInfo.source].getPic(toOldMusicInfo(musicInfo))
+    reqPromise = (musicSdk as any)[musicInfo.source].getPic(toOldMusicInfo(musicInfo))
   } catch (err: any) {
     reqPromise = Promise.reject(err)
   }
@@ -494,7 +494,7 @@ export const handleGetOnlinePicUrl = async({ musicInfo, isRefresh, onToggleSourc
   // console.log(musicInfo.source)
   let reqPromise
   try {
-    reqPromise = musicSdk[musicInfo.source].getPic(toOldMusicInfo(musicInfo))
+    reqPromise = (musicSdk as any)[musicInfo.source].getPic(toOldMusicInfo(musicInfo))
   } catch (err) {
     reqPromise = Promise.reject(err)
   }
@@ -551,7 +551,7 @@ export const getOnlineOtherSourceLyricInfo = async({ musicInfos, onToggleSource,
   let reqPromise
   try {
     // TODO: remove any type
-    reqPromise = (musicSdk[musicInfo.source].getLyric(toOldMusicInfo(musicInfo)) as any).promise
+    reqPromise = ((musicSdk as any)[musicInfo.source].getLyric(toOldMusicInfo(musicInfo)) as any).promise
   } catch (err: any) {
     reqPromise = Promise.reject(err)
   }
@@ -587,7 +587,7 @@ export const handleGetOnlineLyricInfo = async({ musicInfo, onToggleSource, isRef
   let reqPromise
   try {
     // TODO: remove any type
-    reqPromise = (musicSdk[musicInfo.source].getLyric(toOldMusicInfo(musicInfo)) as any).promise
+    reqPromise = ((musicSdk as any)[musicInfo.source].getLyric(toOldMusicInfo(musicInfo)) as any).promise
   } catch (err) {
     reqPromise = Promise.reject(err)
   }
