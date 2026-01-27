@@ -6,7 +6,7 @@ const port = 3000
 
 // 中间件
 app.use(express.json())
-app.use(express.static(path.join(__dirname, 'dist')))
+app.use(express.static(path.join(__dirname, 'public')))
 
 // 简单的 API 路由
 app.get('/api/leaderboard', (req, res) => {
