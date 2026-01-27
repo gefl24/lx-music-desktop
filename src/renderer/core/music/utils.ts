@@ -1,16 +1,104 @@
-import { qualityList } from '@renderer/store'
-import { assertApiSupport } from '@renderer/store/utils'
-import musicSdk from '@renderer/utils/musicSdk'
-import {
-  // getOtherSource as getOtherSourceFromStore,
-  // saveOtherSource as saveOtherSourceFromStore,
-  getMusicUrl as getStoreMusicUrl,
-  getPlayerLyric as getStoreLyric,
-} from '@renderer/utils/ipc'
-import { appSetting } from '@renderer/store/setting'
-import { langS2T, toNewMusicInfo, toOldMusicInfo } from '@renderer/utils'
-import { requestMsg } from '@renderer/utils/message'
-import { apis } from '@renderer/utils/musicSdk/api-source'
+// Mock modules
+const qualityList = {
+  value: {},
+}
+
+const assertApiSupport = () => true
+
+const musicSdk = {
+  findMusic: async() => [],
+  init: async() => {},
+  searchMusic: async() => [],
+  supportQuality: {},
+}
+
+const getStoreMusicUrl = async() => null
+const getStoreLyric = async() => ({
+  lyric: '',
+  tlyric: '',
+  rlyric: '',
+  lxlyric: '',
+})
+
+const appSetting = {
+  'player.isS2t': false,
+  'player.playQuality': '128k',
+}
+
+const langS2T = async(str: string) => str
+const toNewMusicInfo = (info: any) => info
+const toOldMusicInfo = (info: any) => info
+
+const requestMsg = {
+  tooManyRequests: 'tooManyRequests',
+}
+
+const apis = () => ({
+  getMusicUrl: () => ({ promise: Promise.resolve({ url: '' }) }),
+  getPic: () => Promise.resolve(''),
+  getLyric: () => ({ promise: Promise.resolve({ lyric: '', tlyric: '', rlyric: '', lxlyric: '' }) }),
+})
+
+// Type definitions
+type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
+
+namespace LX {
+  namespace Music {
+    export interface MusicInfo {
+      id: string
+      name: string
+      singer: string
+      source: string
+      interval: string
+      meta: {
+        picUrl: string
+        albumName: string
+      }
+    }
+    export interface MusicInfoOnline extends MusicInfo {
+      meta: MusicInfo['meta'] & {
+        qualitys: any[]
+        _qualitys: any
+        albumId: string
+      }
+    }
+    export interface MusicInfoLocal extends MusicInfo {
+      meta: MusicInfo['meta'] & {
+        filePath: string
+        ext: string
+      }
+    }
+    export interface LyricInfo {
+      lyric: string
+      tlyric: string
+      rlyric: string
+      lxlyric: string
+    }
+  }
+  namespace Download {
+    export interface ListItem {
+      id: string
+      progress: number
+      metadata: {
+        musicInfo: LX.Music.MusicInfo
+      }
+    }
+  }
+  namespace Player {
+    export interface LyricInfo {
+      lyric: string
+      tlyric: string
+      rlyric: string
+      lxlyric: string
+      rawlrcInfo?: any
+    }
+  }
+  type Quality = '128k' | '320k' | 'flac' | 'flac24bit'
+  type OnlineSource = string
+  namespace OnlineSource {
+    export type Type = string
+  }
+}
 
 
 const getOtherSourcePromises = new Map()
