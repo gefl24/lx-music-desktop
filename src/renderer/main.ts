@@ -3,8 +3,6 @@ import { createApp } from 'vue'
 
 import './core/globalData'
 
-import '@renderer/event'
-
 // Components
 import mountComponents from './components'
 
@@ -17,14 +15,13 @@ import router from './router'
 // import store from './store'
 
 
-import { getSetting, updateSetting } from './utils/ipc'
+import { getSetting, updateSetting } from './api/setting'
 import { langList } from '@root/lang'
 import type { I18n } from '@root/lang/i18n'
 
 import { initSetting } from './store/setting'
 // import { bubbleCursor } from './utils/cursor-effects/bubbleCursor'
 
-import './worker'
 import { saveViewPrevState } from './utils/data'
 
 // sync(store, router)
