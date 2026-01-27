@@ -20,7 +20,7 @@ const action = {
 
 
 export const initDislikeInfo = async() => {
-  action.initDislikeInfo(await rendererInvoke<LX.Dislike.DislikeInfo>(DISLIKE_EVENT_NAME.get_dislike_music_infos))
+  action.initDislikeInfo(await rendererInvoke())
 }
 
 export const hasDislike = (info: LX.Music.MusicInfo | LX.Download.ListItem | null) => {
@@ -29,15 +29,15 @@ export const hasDislike = (info: LX.Music.MusicInfo | LX.Download.ListItem | nul
 }
 
 export const addDislikeInfo = async(infos: LX.Dislike.DislikeMusicInfo[]) => {
-  await rendererInvoke<LX.Dislike.DislikeMusicInfo[]>(DISLIKE_EVENT_NAME.add_dislike_music_infos, infos)
+  await rendererInvoke()
 }
 
 export const overwirteDislikeInfo = async(rules: string) => {
-  await rendererInvoke<string>(DISLIKE_EVENT_NAME.overwrite_dislike_music_infos, rules)
+  await rendererInvoke()
 }
 
 export const clearDislikeInfo = async() => {
-  await rendererInvoke(DISLIKE_EVENT_NAME.clear_dislike_music_infos)
+  await rendererInvoke()
 }
 
 
@@ -54,13 +54,13 @@ export const registerRemoteDislikeAction = (onListChanged: (listIds: string[]) =
     return action.clearDislikeInfo()
   }
 
-  rendererOn(DISLIKE_EVENT_NAME.add_dislike_music_infos, add_dislike_music_infos)
-  rendererOn(DISLIKE_EVENT_NAME.overwrite_dislike_music_infos, overwrite_dislike_music_infos)
-  rendererOn(DISLIKE_EVENT_NAME.clear_dislike_music_infos, clear_dislike_music_infos)
+  rendererOn()
+  rendererOn()
+  rendererOn()
 
   return () => {
-    rendererOff(DISLIKE_EVENT_NAME.add_dislike_music_infos, add_dislike_music_infos)
-    rendererOff(DISLIKE_EVENT_NAME.overwrite_dislike_music_infos, overwrite_dislike_music_infos)
-    rendererOff(DISLIKE_EVENT_NAME.clear_dislike_music_infos, clear_dislike_music_infos)
+    rendererOff()
+    rendererOff()
+    rendererOff()
   }
 }
