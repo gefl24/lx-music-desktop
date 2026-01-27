@@ -12,11 +12,13 @@ router.get('/', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Keyword is required' })
     }
     
-    if (!source || !musicSdk[source]?.search) {
+    const sourceStr = typeof source === 'string' ? source : ''
+    
+    if (!sourceStr || !musicSdk[sourceStr]?.search) {
       return res.status(400).json({ success: false, message: 'Invalid source' })
     }
     
-    const result = await musicSdk[source].search(keyword as string, parseInt(page as string), parseInt(limit as string))
+    const result = await musicSdk[sourceStr].search(keyword as string, parseInt(page as string), parseInt(limit as string))
     res.json({ success: true, data: result })
   } catch (error) {
     console.error('Failed to search music:', error)
@@ -29,11 +31,13 @@ router.get('/detail', async (req, res) => {
   try {
     const { id, source } = req.query
     
-    if (!id || !source || !musicSdk[source]?.musicInfo) {
+    const sourceStr = typeof source === 'string' ? source : ''
+    
+    if (!id || !sourceStr || !musicSdk[sourceStr]?.musicInfo) {
       return res.status(400).json({ success: false, message: 'Invalid id or source' })
     }
     
-    const result = await musicSdk[source].musicInfo.getMusicInfo(id as string)
+    const result = await musicSdk[sourceStr].musicInfo.getMusicInfo(id as string)
     res.json({ success: true, data: result })
   } catch (error) {
     console.error('Failed to get music detail:', error)
@@ -46,11 +50,13 @@ router.get('/url', async (req, res) => {
   try {
     const { id, source, quality = 'standard' } = req.query
     
-    if (!id || !source || !musicSdk[source]?.musicInfo) {
+    const sourceStr = typeof source === 'string' ? source : ''
+    
+    if (!id || !sourceStr || !musicSdk[sourceStr]?.musicInfo) {
       return res.status(400).json({ success: false, message: 'Invalid id or source' })
     }
     
-    const result = await musicSdk[source].musicInfo.getMusicUrl(id as string, quality as string)
+    const result = await musicSdk[sourceStr].musicInfo.getMusicUrl(id as string, quality as string)
     res.json({ success: true, data: result })
   } catch (error) {
     console.error('Failed to get music url:', error)
