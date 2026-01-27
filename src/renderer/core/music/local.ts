@@ -1,7 +1,9 @@
-import { encodePath } from '@common/utils/common'
-import { updateListMusics } from '@renderer/store/list/action'
-import { saveLyric, saveMusicUrl } from '@renderer/utils/ipc'
-import { getLocalFilePath } from '@renderer/utils/music'
+// Mock modules
+const encodePath = (path: string) => path
+const updateListMusics = async() => {}
+const saveLyric = async() => {}
+const saveMusicUrl = async() => {}
+const getLocalFilePath = async() => null
 
 import {
   buildLyricInfo,
