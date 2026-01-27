@@ -32,11 +32,13 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params
     const { page = 1, source } = req.query
     
-    if (!source || !musicSdk[source]?.leaderboard?.getList) {
+    const sourceStr = typeof source === 'string' ? source : ''
+    
+    if (!sourceStr || !musicSdk[sourceStr]?.leaderboard?.getList) {
       return res.status(400).json({ success: false, message: 'Invalid source' })
     }
     
-    const result = await musicSdk[source].leaderboard.getList(id, parseInt(page as string))
+    const result = await musicSdk[sourceStr].leaderboard.getList(id, parseInt(page as string))
     res.json({ success: true, data: result })
   } catch (error) {
     console.error('Failed to get leaderboard detail:', error)
