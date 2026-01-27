@@ -58,10 +58,13 @@ export const getListMusics = async (listId: string) => {
   const db = getDB()
   const stmt = db.prepare('SELECT * FROM list_music WHERE list_id = ? ORDER BY position')
   const rows = stmt.all(listId)
-  return rows.map(row => ({
-    ...row,
-    music_info: JSON.parse(row.music_info)
-  }))
+  return rows.map(row => {
+    const typedRow = row as { [key: string]: any }
+    return {
+      ...typedRow,
+      music_info: JSON.parse(typedRow.music_info)
+    }
+  })
 }
 
 export const addListMusics = async (listId: string, musics: any[]) => {
@@ -70,7 +73,8 @@ export const addListMusics = async (listId: string, musics: any[]) => {
   // 获取当前最大位置
   const maxPosStmt = db.prepare('SELECT MAX(position) as max_pos FROM list_music WHERE list_id = ?')
   const maxPosResult = maxPosStmt.get(listId)
-  let position = (maxPosResult?.max_pos || -1) + 1
+  const typedMaxPosResult = maxPosResult as { [key: string]: any }
+  let position = (typedMaxPosResult?.max_pos || -1) + 1
   
   const tx = db.transaction((musics: any[]) => {
     for (const music of musics) {
