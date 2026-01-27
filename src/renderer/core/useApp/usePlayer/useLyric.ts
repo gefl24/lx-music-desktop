@@ -23,10 +23,10 @@ export default () => {
     sendInfo()
   }
 
-  watch(() => appSetting['player.isShowLyricTranslation'], setLyric)
-  watch(() => appSetting['player.isShowLyricRoma'], setLyric)
-  watch(() => appSetting['player.isSwapLyricTranslationAndRoma'], setLyric)
-  watch(() => appSetting['player.isPlayLxlrc'], setLyric)
+  watch(() => appSetting['player.isShowLyricTranslation'])
+  watch(() => appSetting['player.isShowLyricRoma'])
+  watch(() => appSetting['player.isSwapLyricTranslationAndRoma'])
+  watch(() => appSetting['player.isPlayLxlrc'])
 
   window.app_event.on('play', play)
   window.app_event.on('pause', pause)
