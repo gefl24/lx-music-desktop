@@ -1,0 +1,32 @@
+# 依赖目录
+node_modules/
+
+# 构建输出
+dist/
+build/
+
+# 数据目录
+data/
+
+# 日志文件
+logs/
+*.log
+
+# 编辑器文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 配置文件
+.env
+.env.local
+.env.*.local
+
+# 打包文件
+*.tar.gz
+*.zip
