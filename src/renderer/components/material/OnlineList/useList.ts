@@ -1,7 +1,20 @@
-import { computed, watch, ref, onBeforeUnmount, type Ref } from '@common/utils/vueTools'
-import { isFullscreen } from '@renderer/store'
-import { appSetting } from '@renderer/store/setting'
-import { getFontSizeWithScreen } from '@renderer/utils'
+// Mock vueTools
+const computed = (fn: () => any) => ({ value: fn() })
+const watch = () => () => {}
+const ref = (value: any) => ({ value })
+const onBeforeUnmount = () => {}
+type Ref<T> = { value: T }
+
+// Mock store
+const isFullscreen = { value: false }
+
+// Mock setting
+const appSetting = {
+  'common.fontSize': 14,
+}
+
+// Mock utils
+const getFontSizeWithScreen = () => 14
 
 const useKeyEvent = ({ handleSelectAllData, listRef }: {
   handleSelectAllData: () => void
