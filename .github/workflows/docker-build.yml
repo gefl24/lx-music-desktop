@@ -29,4 +29,4 @@ jobs:
             org.opencontainers.image.title=LX Music Web
             org.opencontainers.image.description=LX Music Desktop as a Docker containerized web application
             org.opencontainers.image.version=${{ github.sha }}
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
