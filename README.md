@@ -1,135 +1,191 @@
 <p align="center"><a href="https://github.com/lyswhut/lx-music-desktop"><img width="200" src="https://github.com/lyswhut/lx-music-desktop/blob/master/doc/images/icon.png" alt="lx-music logo"></a></p>
 
-<h1 align="center">LX Music 桌面版</h1>
+<h1 align="center">LX Music Docker版</h1>
 
-<p align="center">
-  <a href="https://github.com/lyswhut/lx-music-desktop/releases"><img src="https://img.shields.io/github/release/lyswhut/lx-music-desktop" alt="Release version"></a>
-  <a href="https://github.com/lyswhut/lx-music-desktop/actions/workflows/release.yml"><img src="https://github.com/lyswhut/lx-music-desktop/workflows/Build/badge.svg" alt="Build status"></a>
-  <a href="https://github.com/lyswhut/lx-music-desktop/actions/workflows/beta-pack.yml"><img src="https://github.com/lyswhut/lx-music-desktop/workflows/Build%20Beta/badge.svg" alt="Build status"></a>
-  <a href="https://electronjs.org/releases/stable"><img src="https://img.shields.io/github/package-json/dependency-version/lyswhut/lx-music-desktop/dev/electron/master" alt="Electron version"></a>
-  <!-- <a href="https://github.com/lyswhut/lx-music-desktop/releases"><img src="https://img.shields.io/github/downloads/lyswhut/lx-music-desktop/latest/total" alt="Downloads"></a> -->
-  <a href="https://github.com/lyswhut/lx-music-desktop/tree/dev"><img src="https://img.shields.io/github/package-json/v/lyswhut/lx-music-desktop/dev" alt="Dev branch version"></a>
-  <!-- <a href="https://github.com/lyswhut/lx-music-desktop/blob/master/LICENSE"><img src="https://img.shields.io/github/license/lyswhut/lx-music-desktop" alt="License"></a> -->
-</p>
+# LX Music Desktop - Docker 容器化 Web 应用
 
-<!-- [![GitHub release][1]][2]
-[![Build status][3]][4]
-[![GitHub Releases Download][5]][6]
-[![dev branch][7]][8]
-[![GitHub license][9]][10] -->
+## 项目简介
 
-<!-- [1]: https://img.shields.io/github/release/lyswhut/lx-music-desktop
-[2]: https://github.com/lyswhut/lx-music-desktop/releases
-[3]: https://ci.appveyor.com/api/projects/status/flrsqd5ymp8fnte5?svg=true
-[4]: https://ci.appveyor.com/project/lyswhut/lx-music-desktop
-[5]: https://img.shields.io/github/downloads/lyswhut/lx-music-desktop/latest/total
-[5]: https://img.shields.io/github/downloads/lyswhut/lx-music-desktop/total
-[6]: https://github.com/lyswhut/lx-music-desktop/releases
-[7]: https://img.shields.io/github/package-json/v/lyswhut/lx-music-desktop/dev
-[8]: https://github.com/lyswhut/lx-music-desktop/tree/dev
-[9]: https://img.shields.io/github/license/lyswhut/lx-music-desktop
-[10]: https://github.com/lyswhut/lx-music-desktop/blob/master/LICENSE -->
+LX Music Desktop 是一个免费的音乐查找助手，现在已经转换为 Docker 容器化 Web 应用，通过 web 页面管理音乐。
 
-<p align="center">一个基于 Electron & Vue 开发的音乐软件</p>
+## 核心功能
 
-## 说明
+- **自定义源支持**：支持多个音乐平台的音乐源，可配置和管理用户 API
+- **歌单功能**：支持歌单创建、编辑、删除，歌曲添加、移除、排序，歌单导入/导出
+- **排行榜功能**：支持多个音乐平台的排行榜，可查看排行榜详情，将排行榜歌曲添加到歌单
+- **音乐搜索和下载**：支持多平台音乐搜索，可下载音乐文件
+- **设置管理**：支持应用设置的配置和管理
+- **数据持久化**：使用 SQLite 数据库存储数据，确保数据安全
 
-所用技术栈：
+## 技术栈
 
-- Electron 30+
-- Vue 3
+- **后端**：Express + TypeScript + SQLite
+- **前端**：Vue 3 + TypeScript + Vue Router
+- **容器化**：Docker + Docker Compose
 
-已支持的平台：
+## 部署方式
 
-- Linux
-- macOS
-- Windows 7 及以上
+### 使用 Docker Compose
 
-*移动版项目地址：https://github.com/lyswhut/lx-music-mobile*
+1. **克隆仓库**
 
-*LX Music 项目发展调整与新项目计划：https://github.com/lyswhut/lx-music-desktop/issues/1912*
+```bash
+git clone https://github.com/gefl24/lx-music-desktop.git
+cd lx-music-desktop
+```
 
-软件变化请查看[更新日志](https://github.com/lyswhut/lx-music-desktop/blob/master/CHANGELOG.md)。
+2. **启动服务**
 
-软件下载请查看 [GitHub Releases](https://github.com/lyswhut/lx-music-desktop/releases)。
+```bash
+docker-compose up -d
+```
 
-使用常见问题请参阅[桌面版常见问题](https://lyswhut.github.io/lx-music-doc/desktop/faq)。
+3. **访问应用**
 
-目前本项目的原始发布地址只有 [**GitHub**](https://github.com/lyswhut/lx-music-desktop/releases)，其他渠道均为第三方转载发布，与本项目无关！
+打开浏览器，访问 `http://localhost:3000`
 
-为了提高使用门槛，本软件内的默认设置、UI 操作不以新手友好为目标，所以使用前建议先根据你的喜好浏览调整一遍软件设置，阅读一遍[音乐播放列表机制](https://lyswhut.github.io/lx-music-doc/desktop/faq/playlist)及[可用的鼠标、键盘快捷操作](https://lyswhut.github.io/lx-music-doc/desktop/faq/hotkey)。
+### 使用 Docker 命令
 
-### Scheme URL 支持
+1. **构建镜像**
 
-从 v1.17.0 起支持 Scheme URL，可以使用此功能在浏览器等场景下调用 LX Music，我们开发了一个[油猴脚本](https://github.com/lyswhut/lx-music-script#readme)配套使用。
+```bash
+docker build -t lx-music-web .
+```
 
-脚本安装地址：[LX Music 辅助脚本](https://greasyfork.org/zh-CN/scripts/438148)。
+2. **运行容器**
 
-若你想自己调用 LX Music，可以参考文档「[Scheme URL 支持](https://lyswhut.github.io/lx-music-doc/desktop/scheme-url)」部分。
+```bash
+docker run -p 3000:3000 -v ./data:/app/data lx-music-web
+```
 
-### 数据同步服务
+## API 端点说明
 
-从 v2.2.0 起，我们发布了一个独立的[数据同步服务](https://github.com/lyswhut/lx-music-sync-server#readme)。如果你有服务器，可以将其部署到服务器上作为私人多端同步服务使用，详情看该项目说明。
+### 歌单管理
 
-### 开放 API 支持
+- `GET /api/list` - 获取歌单列表
+- `POST /api/list` - 创建歌单
+- `PUT /api/list/:id` - 更新歌单
+- `DELETE /api/list/:id` - 删除歌单
+- `GET /api/list/:id/musics` - 获取歌单歌曲
+- `POST /api/list/:id/musics` - 添加歌单歌曲
+- `DELETE /api/list/:id/musics` - 删除歌单歌曲
+- `PUT /api/list/:id/musics/position` - 更新歌单歌曲位置
 
-从 v2.7.0 起支持开放 API 服务。启用该功能后，将会在本地启动一个 HTTP 服务，提供播放器相关的接口供第三方软件调用，详情看文档「[开放 API 服务](https://lyswhut.github.io/lx-music-doc/desktop/open-api)」部分。
+### 排行榜功能
 
-### 数据存储目录
+- `GET /api/leaderboard` - 获取排行榜列表
+- `GET /api/leaderboard/:id` - 获取排行榜详情
 
-默认情况下，软件的数据存储在：
+### 自定义源管理
 
-- Linux：`$XDG_CONFIG_HOME/lx-music-desktop` 或 `~/.config/lx-music-desktop`
-- macOS：`~/Library/Application Support/lx-music-desktop`
-- Windows：`%APPDATA%/lx-music-desktop`
+- `GET /api/user-api` - 获取用户 API 配置
+- `POST /api/user-api` - 保存用户 API 配置
+- `POST /api/user-api/test` - 测试用户 API
 
-在 Windows 平台上，若程序文件夹中存在 `portable` 文件夹，则自动使用此文件夹作为数据存储文件夹（适用于 v1.17.0 及以上版本）。
+### 搜索功能
 
-## 用户界面
+- `GET /api/search` - 搜索音乐
+- `GET /api/search/detail` - 获取音乐详情
+- `GET /api/search/url` - 获取音乐 URL
 
-<p><img width="100%" src="./doc/images/app.png" alt="lx-music desktop UI"></p>
+### 下载功能
 
-## 贡献代码
+- `GET /api/download` - 获取下载列表
+- `POST /api/download` - 添加下载任务
+- `PUT /api/download/:id` - 更新下载任务
+- `DELETE /api/download/:id` - 删除下载任务
+- `DELETE /api/download` - 清空下载列表
 
-本项目欢迎 PR，但为了 PR 能顺利合并，需要注意以下几点：
+### 设置管理
 
-- 对于添加新功能的 PR，建议在提交 PR 前先创建 Issue 进行说明，以确认该功能是否确实需要。
-- 对于修复 bug 的 PR，请提供修复前后的说明及重现方式。
-- 对于其他类型的 PR，则适当附上说明。
+- `GET /api/setting` - 获取设置
+- `PUT /api/setting` - 更新设置
+- `POST /api/setting/reset` - 重置设置
 
-贡献代码步骤：
+### 健康检查
 
-1. 参照[源码使用方法](https://lyswhut.github.io/lx-music-doc/desktop/use-source-code)设置开发环境；
-2. 克隆本仓库代码并切换至 `dev` 分支进行开发；
-3. 提交 PR 至 `dev` 分支。
+- `GET /health` - 健康检查
 
-## 源码使用方法
+## 使用说明
 
-请参阅：<https://lyswhut.github.io/lx-music-doc/desktop/use-source-code>
+1. **首次访问**
 
-## 项目协议
+   首次访问应用时，系统会自动初始化默认设置。
 
-本项目基于 [Apache License 2.0](https://github.com/lyswhut/lx-music-desktop/blob/master/LICENSE) 许可证发行，以下协议是对于 Apache License 2.0 的补充，如有冲突，以以下协议为准。
+2. **配置自定义源**
 
----
+   1. 点击左侧菜单的「设置」
+   2. 在「用户 API」选项卡中配置自定义源
+   3. 可手动添加或在线导入用户 API
 
-*词语约定：本协议中的“本项目”指 LX Music（洛雪音乐助手）桌面版项目；“使用者”指签署本协议的使用者；“官方音乐平台”指对本项目内置的包括酷我、酷狗、咪咕等音乐源的官方平台统称；“版权数据”指包括但不限于图像、音频、名字等在内的他人拥有所属版权的数据。*
+3. **使用歌单功能**
 
-### 一、数据来源
+   1. 点击左侧菜单的「歌单」
+   2. 可创建新歌单，编辑或删除现有歌单
+   3. 点击歌单进入详情页，可添加、移除、排序歌曲
 
-1.1 本项目的各官方平台在线数据来源原理是从其公开服务器中拉取数据（与未登录状态在官方平台 APP 获取的数据相同），经过对数据简单地筛选与合并后进行展示，因此本项目不对数据的合法性、准确性负责。
+4. **使用排行榜功能**
 
-1.2 本项目本身没有获取某个音频数据的能力，本项目使用的在线音频数据来源来自软件设置内“自定义源”设置所选择的“源”返回的在线链接。例如播放某首歌，本项目所做的只是将希望播放的歌曲名、艺术家等信息传递给“源”，若“源”返回了一个链接，则本项目将认为这就是该歌曲的音频数据而进行使用，至于这是不是正确的音频数据本项目无法校验其准确性，所以使用本项目的过程中可能会出现希望播放的音频与实际播放的音频不对应或者无法播放的问题。
+   1. 点击左侧菜单的「排行榜」
+   2. 选择音乐平台和排行榜类型
+   3. 点击排行榜进入详情页，可查看歌曲列表，将歌曲添加到歌单
 
-1.3 本项目的非官方平台数据（例如“我的列表”内列表）来自使用者本地系统或者使用者连接的同步服务，本项目不对这些数据的合法性、准确性负责。
+5. **搜索音乐**
 
-### 二、版权数据
+   1. 点击左侧菜单的「搜索」
+   2. 输入关键词，选择音乐平台
+   3. 点击搜索按钮，查看搜索结果
+   4. 可查看音乐详情，下载音乐文件
 
-2.1 使用本项目的过程中可能会产生版权数据。对于这些版权数据，本项目不拥有它们的所有权。为了避免侵权，使用者务必在 **24 小时内** 清除使用本项目的过程中所产生的版权数据。
+## 注意事项
 
-### 三、音乐平台别名
+1. **数据持久化**
 
-3.1 本项目内的官方音乐平台别名为本项目内对官方音乐平台的一个称呼，不包含恶意。如果官方音乐平台觉得不妥，可联系本项目更改或移除。
+   应用数据会持久化到本地的 `./data` 目录中，包括数据库文件和其他配置文件。请确保该目录有足够的权限。
+
+2. **自定义源配置**
+
+   请确保配置的自定义源 API 是可用的，否则可能无法搜索和下载音乐。
+
+3. **性能优化**
+
+   应用使用 SQLite 数据库的 WAL 模式，提高了并发性能和可靠性。
+
+4. **安全注意事项**
+
+   - 请不要在生产环境中暴露应用的公网访问，建议使用反向代理并配置访问控制
+   - 请定期备份 `./data` 目录中的数据，以防数据丢失
+
+5. **环境变量**
+
+   可通过环境变量配置应用：
+   - `PORT` - 服务端口，默认 3000
+   - `DATA_PATH` - 数据存储路径，默认 /app/data
+
+## 常见问题
+
+### 应用无法启动
+
+1. 检查 Docker 服务是否正常运行
+2. 检查端口 3000 是否被占用
+3. 检查 `./data` 目录权限是否正确
+
+### 无法搜索音乐
+
+1. 检查自定义源 API 配置是否正确
+2. 检查网络连接是否正常
+3. 尝试切换其他音乐平台
+
+### 下载失败
+
+1. 检查网络连接是否正常
+2. 检查音乐源是否支持下载
+3. 检查 `./data` 目录空间是否足够
+
+## 许可证
+
+Apache-2.0
+
 
 ### 四、资源使用
 
