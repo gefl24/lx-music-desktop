@@ -25,13 +25,13 @@ class Lyric {
 
 const getAnalyser = () => null
 const getPlayerCurrentTime = () => 0
-const setLines = () => {}
-const setOffset = () => {}
-const setTempOffset = () => {}
-const setText = () => {}
-const setStatusText = () => {}
+const setLines = (lines: any[]) => {}
+const setOffset = (offset: number) => {}
+const setTempOffset = (offset: number) => {}
+const setText = (text: string, line: number) => {}
+const setStatusText = (text: string) => {}
 const markRawList = (list: any[]) => list
-const onNewDesktopLyricProcess = () => {}
+const onNewDesktopLyricProcess = (callback: (data: any) => void) => {}
 
 const lyric = {
   line: 0,
@@ -261,7 +261,7 @@ export const pause = () => {
 }
 
 export const stop = () => {
-  lrc.setLyric('')
+  lrc.setLyric('', [])
   sendDesktopLyricInfo({ action: 'set_stop' })
   setText('', 0)
 }
