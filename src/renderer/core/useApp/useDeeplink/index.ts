@@ -1,10 +1,17 @@
 import { onBeforeUnmount } from '@common/utils/vueTools'
-import { clearEnvParamsDeeplink, focusWindow, onDeeplink } from '@renderer/utils/ipc'
 
 import { useDialog } from './utils'
 import useMusicAction from './useMusicAction'
 import useSonglistAction from './useSonglistAction'
 import usePlayerAction from './usePlayerAction'
+
+// For web version, provide mock implementations for IPC functions
+const clearEnvParamsDeeplink = () => {}
+const focusWindow = () => {}
+const onDeeplink = (listener: (data: { params: string }) => void) => {
+  // Return a function to remove the listener (no-op for web)
+  return () => {}
+}
 
 export default () => {
   let isInited = false
@@ -50,7 +57,7 @@ export default () => {
     }
   }
 
-  const rDeeplink = onDeeplink(async({ params: link }) => {
+  const rDeeplink = onDeeplink(async({ params: link }: { params: string }) => {
     console.log(link)
     if (!isInited) return
     clearEnvParamsDeeplink()
