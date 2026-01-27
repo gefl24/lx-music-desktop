@@ -1,13 +1,20 @@
-version: '3'
+version: '3.8'
+
 services:
   lx-music-web:
     build: .
     container_name: lx-music-web
-    restart: always
     ports:
       - "3000:3000"
     volumes:
-      # 挂载数据目录，确保数据库(sqlite)文件持久化
       - ./data:/app/data
     environment:
+      - DATA_PATH=/app/data
       - PORT=3000
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
