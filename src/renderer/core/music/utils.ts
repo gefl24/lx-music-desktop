@@ -1,63 +1,69 @@
 // Type definitions
 type MakeOptional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
-namespace LX {
-  namespace Music {
-    export interface MusicInfo {
-      id: string
-      name: string
-      singer: string
-      source: string
-      interval: string
-      meta: {
-        picUrl: string
-        albumName: string
+// Global LX namespace
+declare global {
+  namespace LX {
+    namespace Music {
+      interface MusicInfo {
+        id: string
+        name: string
+        singer: string
+        source: string
+        interval: string
+        meta: {
+          picUrl: string
+          albumName: string
+        }
+      }
+      interface MusicInfoOnline extends MusicInfo {
+        meta: MusicInfo['meta'] & {
+          qualitys: any[]
+          _qualitys: any
+          albumId: string
+        }
+      }
+      interface MusicInfoLocal extends MusicInfo {
+        meta: MusicInfo['meta'] & {
+          filePath: string
+          ext: string
+        }
+      }
+      interface LyricInfo {
+        lyric: string
+        tlyric: string
+        rlyric: string
+        lxlyric: string
       }
     }
-    export interface MusicInfoOnline extends MusicInfo {
-      meta: MusicInfo['meta'] & {
-        qualitys: any[]
-        _qualitys: any
-        albumId: string
+    namespace Download {
+      interface ListItem {
+        id: string
+        progress: number
+        metadata: {
+          musicInfo: LX.Music.MusicInfo
+        }
       }
     }
-    export interface MusicInfoLocal extends MusicInfo {
-      meta: MusicInfo['meta'] & {
-        filePath: string
-        ext: string
+    namespace Player {
+      interface LyricInfo {
+        lyric: string
+        tlyric: string
+        rlyric: string
+        lxlyric: string
+        rawlrcInfo?: any
       }
     }
-    export interface LyricInfo {
-      lyric: string
-      tlyric: string
-      rlyric: string
-      lxlyric: string
+    type Quality = '128k' | '320k' | 'flac' | 'flac24bit'
+    type OnlineSource = string
+    namespace OnlineSource {
+      type Type = string
     }
-  }
-  namespace Download {
-    export interface ListItem {
-      id: string
-      progress: number
-      metadata: {
-        musicInfo: LX.Music.MusicInfo
-      }
-    }
-  }
-  namespace Player {
-    export interface LyricInfo {
-      lyric: string
-      tlyric: string
-      rlyric: string
-      lxlyric: string
-      rawlrcInfo?: any
-    }
-  }
-  type Quality = '128k' | '320k' | 'flac' | 'flac24bit'
-  type OnlineSource = string
-  namespace OnlineSource {
-    export type Type = string
   }
 }
+
+// Ensure the declaration is merged
+export {}
 
 // Mock modules
 const qualityList = {
@@ -95,9 +101,9 @@ const requestMsg = {
 }
 
 const apis = (source: string) => ({
-  getMusicUrl: () => ({ promise: Promise.resolve({ url: '' }) }),
-  getPic: () => Promise.resolve(''),
-  getLyric: () => ({ promise: Promise.resolve({ lyric: '', tlyric: '', rlyric: '', lxlyric: '' }) }),
+  getMusicUrl: (musicInfo: any, quality: any) => ({ promise: Promise.resolve({ url: '' }) }),
+  getPic: (musicInfo: any) => Promise.resolve(''),
+  getLyric: (musicInfo: any) => ({ promise: Promise.resolve({ lyric: '', tlyric: '', rlyric: '', lxlyric: '' }) }),
 })
 
 
@@ -294,7 +300,7 @@ export const getOnlineOtherSourcePicByLocal = async(musicInfo: LX.Music.MusicInf
 
   let reqPromise
   try {
-    reqPromise = apis('local').getPic(toOldMusicInfo(musicInfo)).promise
+    reqPromise = apis('local').getPic(toOldMusicInfo(musicInfo))
   } catch (err: any) {
     reqPromise = Promise.reject(err)
   }
