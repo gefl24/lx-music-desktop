@@ -1,5 +1,11 @@
 // import defaultSetting from '@common/defaultSetting'
-import createWorkers from '@renderer/worker'
+
+// Mock createWorkers
+const createWorkers = () => ({
+  main: {
+    langS2t: () => Promise.resolve(''),
+  },
+})
 
 window.lx = {
   // appSetting: defaultSetting,
