@@ -1,6 +1,6 @@
 // Mock modules
-const getDownloadFilePath = async() => null
-const buildSavePath = () => ''
+const getDownloadFilePath = async(musicInfo: any, savePath: string) => null
+const buildSavePath = (musicInfo: any) => ''
 
 import {
   getMusicUrl as getOnlineMusicUrl,
