@@ -5,8 +5,8 @@ export const getMusicInfo = async (id: string) => {
   const stmt = db.prepare('SELECT * FROM music_other_source WHERE id = ?')
   const row = stmt.get(id)
   return row ? {
-    ...row,
-    data: JSON.parse(row.data)
+    ...(row as { [key: string]: any }),
+    data: JSON.parse((row as { [key: string]: any }).data)
   } : null
 }
 
