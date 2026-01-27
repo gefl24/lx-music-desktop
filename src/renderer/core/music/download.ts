@@ -9,6 +9,24 @@ import {
 } from './online'
 import { buildLyricInfo, getCachedLyricInfo } from './utils'
 
+// Local type definitions for compatibility
+type DownloadListItem = any
+type MusicInfoOnline = any
+type PlayerLyricInfo = any
+
+// Mock LX namespace for compatibility
+declare namespace LX {
+  namespace Download {
+    type ListItem = any
+  }
+  namespace Music {
+    type MusicInfoOnline = any
+  }
+  namespace Player {
+    type LyricInfo = any
+  }
+}
+
 export const getMusicUrl = async({ musicInfo, isRefresh, allowToggleSource = true, onToggleSource = () => {} }: {
   musicInfo: LX.Download.ListItem
   isRefresh: boolean
