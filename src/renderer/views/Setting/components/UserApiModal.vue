@@ -30,14 +30,13 @@ material-modal(:show="modelValue" bg-close teleport="#view" @close="handleClose"
 </template>
 
 <script>
-import { importUserApi, removeUserApi, showSelectDialog, setAllowShowUserApiUpdateAlert } from '@renderer/utils/ipc'
-import { readFile } from '@common/utils/nodejs'
-import { openUrl } from '@common/utils/electron'
+import { openUrl } from '@renderer/utils/web'
 import apiSourceInfo from '@renderer/utils/musicSdk/api-source-info'
 import { userApi } from '@renderer/store'
 import { appSetting, updateSetting } from '@renderer/store/setting'
 import { computed, ref } from '@common/utils/vueTools'
 import { dialog } from '@renderer/plugins/Dialog'
+import { getUserApiConfig, saveUserApiConfig } from '@renderer/api/userApi'
 
 import UserApiOnlineImportModal from './UserApiOnlineImportModal.vue'
 
@@ -65,36 +64,16 @@ export default {
   },
   methods: {
     async importUserApi(script) {
-      return importUserApi(script).then(({ apiList }) => {
-        userApi.list = apiList
-      }).catch((err) => {
-        void dialog(this.$t('user_api_import__failed', { message: err.message }))
-      })
+      // For web version, we'll handle user API import differently
+      // since we don't have access to the file system
+      void dialog(this.$t('user_api_import__failed', { message: 'Import not supported in web version' }))
     },
     handleImport() {
-      if (this.userApi.list.length > 20) {
-        this.$dialog({
-          message: this.$t('user_api__max_tip'),
-          confirmButtonText: this.$t('ok'),
-        })
-        return
-      }
-      void showSelectDialog({
-        title: this.$t('user_api__import_file'),
-        properties: ['openFile'],
-        filters: [
-          { name: 'LX API File', extensions: ['js'] },
-          { name: 'All Files', extensions: ['*'] },
-        ],
-      }).then(async result => {
-        if (result.canceled) return
-        return readFile(result.filePaths[0]).then(async data => {
-          return this.importUserApi(data.toString())
-        })
-      })
+      // For web version, we'll use a different approach for file import
+      void dialog(this.$t('user_api_import__failed', { message: 'Import not supported in web version' }))
     },
     handleExport() {
-
+      // For web version, we'll handle export differently
     },
     async handleRemove(index) {
       const api = this.apiList[index]
@@ -104,16 +83,31 @@ export default {
         if (!backApi) backApi = userApi.list[0]
         updateSetting({ 'common.apiSource': backApi?.id ?? '' })
       }
-      userApi.list = await removeUserApi([api.id])
+      
+      // Remove the API from the list and save
+      const updatedList = [...this.apiList]
+      updatedList.splice(index, 1)
+      userApi.list = updatedList
+      
+      await saveUserApiConfig(updatedList)
     },
     handleClose() {
       this.$emit('update:modelValue', false)
     },
     handleOpenUrl(url) {
-      void openUrl(url)
+      window.open(url, '_blank')
     },
     handleChangeAllowUpdateAlert(api, enable) {
-      void setAllowShowUserApiUpdateAlert(api.id, enable)
+      // For web version, we'll handle this differently
+      const updatedList = this.apiList.map(item => {
+        if (item.id === api.id) {
+          return { ...item, allowShowUpdateAlert: enable }
+        }
+        return item
+      })
+      userApi.list = updatedList
+      
+      saveUserApiConfig(updatedList)
     },
   },
 }
