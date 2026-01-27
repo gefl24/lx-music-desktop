@@ -7,7 +7,7 @@ COPY package.json package-lock.json ./
 RUN npm install --production --legacy-peer-deps
 
 # 复制服务器文件
-COPY server.js ./
+COPY ./server.js ./server.js
 
 # 创建数据目录
 RUN mkdir -p /app/data
