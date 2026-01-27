@@ -1,19 +1,57 @@
-import { nextTick, onBeforeUnmount, watch } from '@common/utils/vueTools'
-import {
-  onUpdateAvailable,
-  onUpdateDownloaded,
-  onUpdateError,
-  onUpdateNotAvailable,
-  onUpdateProgress,
-  getIgnoreVersion,
-  getLastStartInfo,
-  saveLastStartInfo,
-} from '@renderer/utils/ipc'
-import { compareVer, isWin } from '@common/utils'
-import { isShowChangeLog, versionInfo } from '@renderer/store'
-import { getVersionInfo } from '@renderer/utils/update'
-import { dialog } from '@renderer/plugins/Dialog'
-import { appSetting } from '@renderer/store/setting'
+// For web version, we'll provide mock implementations
+const nextTick = (callback: () => void) => Promise.resolve().then(callback)
+const onBeforeUnmount = (callback: () => void) => {
+  // No-op for web version
+}
+const watch = (source: any, callback: any) => {
+  // No-op for web version
+  return () => {}
+}
+
+// Mock store
+const isShowChangeLog = {
+  value: false
+}
+
+const versionInfo = {
+  version: '0.0.0',
+  newVersion: null as any,
+  showModal: false,
+  isUnknown: false,
+  isLatest: true,
+  reCheck: false,
+  status: 'idle' as string,
+  downloadProgress: null as any,
+}
+
+// Mock app setting
+const appSetting = {
+  'common.showChangeLog': false,
+  'common.tryAutoUpdate': false,
+}
+
+// Mock IPC functions
+const getIgnoreVersion = () => Promise.resolve('')
+const getLastStartInfo = () => Promise.resolve('')
+const saveLastStartInfo = () => Promise.resolve()
+const onUpdateAvailable = () => () => {}
+const onUpdateNotAvailable = () => () => {}
+const onUpdateError = () => () => {}
+const onUpdateProgress = () => () => {}
+const onUpdateDownloaded = () => () => {}
+
+// Mock dialog
+const dialog = () => Promise.resolve()
+
+// Mock utils
+const compareVer = (ver1: string, ver2: string) => {
+  return 0
+}
+
+const isWin = false
+
+// Mock getVersionInfo
+const getVersionInfo = () => Promise.resolve({ version: '0.0.0', desc: '' })
 
 export default () => {
   let isShowedChangeLog = false
@@ -21,20 +59,7 @@ export default () => {
   // 更新超时定时器
   let updateTimeout: number | null = null
   const startUpdateTimeout = () => {
-    if (window.lx.isProd && !(isWin && process.arch.includes('arm'))) {
-      updateTimeout = window.setTimeout(() => {
-        updateTimeout = null
-        void nextTick(() => {
-          showUpdateModal()
-          setTimeout(() => {
-            void dialog({
-              message: window.i18n.t('update__timeout_top'),
-              confirmButtonText: window.i18n.t('alert_button_text'),
-            })
-          }, 500)
-        })
-      }, 60 * 60 * 1000)
-    }
+    // No-op for web version
   }
 
   const clearUpdateTimeout = () => {
@@ -45,30 +70,31 @@ export default () => {
 
   const handleShowChangeLog = () => {
     isShowedChangeLog = true
-    void getLastStartInfo().then((version) => {
+    void getLastStartInfo().then((version: string) => {
       if (version == process.versions.app) return
       saveLastStartInfo(process.versions.app)
       if (!appSetting['common.showChangeLog']) return
       if (version) {
         if (compareVer(process.versions.app, version) < 0) {
           void dialog({
-            message: window.i18n.t('update__downgrade_tip', { ver: `${version} → ${process.versions.app}` }),
-            confirmButtonText: window.i18n.t('update__ignore_confirm_tip_confirm'),
+            message: 'Downgrade detected',
+            confirmButtonText: 'OK',
           })
           return
         }
 
-        if (compareVer(version, versionInfo.newVersion!.version) >= 0) return
+        if (versionInfo.newVersion && compareVer(version, versionInfo.newVersion.version) >= 0) return
       } else if (
         // 如果当前版本不在已发布的版本中，则不需要显示更新日志
-        ![{ version: versionInfo.newVersion!.version, desc: '' }, ...(versionInfo.newVersion!.history ?? [])]
+        versionInfo.newVersion &&
+        ![{ version: versionInfo.newVersion.version, desc: '' }, ...(versionInfo.newVersion.history ?? [])]
           .some(i => i.version == process.versions.app)
       ) return
       isShowChangeLog.value = true
     })
   }
 
-  const handleGetVersionInfo = async(): Promise<NonNullable<typeof versionInfo['newVersion']>> => {
+  const handleGetVersionInfo = async() => {
     return (versionInfo.newVersion?.history && !versionInfo.reCheck
       ? Promise.resolve(versionInfo.newVersion)
       : getVersionInfo().then((body: any) => {
@@ -88,7 +114,7 @@ export default () => {
 
   let versionInfoPromise: null | ReturnType<typeof handleGetVersionInfo> = null
 
-  const showUpdateModal = (status?: LX.UpdateStatus) => {
+  const showUpdateModal = (status?: string) => {
     if (versionInfoPromise) {
       if (
         // @ts-expect-error
@@ -98,7 +124,7 @@ export default () => {
       }
     } else versionInfoPromise = handleGetVersionInfo()
     // eslint-disable-next-line @typescript-eslint/promise-function-async
-    void versionInfoPromise.then((result) => {
+    void versionInfoPromise.then((result: any) => {
       versionInfo.reCheck = false
 
       if (result.version == '0.0.0') {
@@ -118,7 +144,7 @@ export default () => {
         return
       }
 
-      return getIgnoreVersion().then((ignoreVersion) => {
+      return getIgnoreVersion().then((ignoreVersion: string) => {
         versionInfo.isLatest = false
         let preStatus = versionInfo.status
         if (status) versionInfo.status = status
@@ -128,8 +154,8 @@ export default () => {
           if (status == 'error' && preStatus == 'downloading' && !localStorage.getItem('update__download_failed_tip')) {
             setTimeout(() => {
               void dialog({
-                message: window.i18n.t('update__error_top'),
-                confirmButtonText: window.i18n.t('alert_button_text'),
+                message: 'Update error',
+                confirmButtonText: 'OK',
               }).finally(() => {
                 localStorage.setItem('update__download_failed_tip', '1')
               })
@@ -143,9 +169,7 @@ export default () => {
     })
   }
 
-  const rUpdateAvailable = onUpdateAvailable(({ params: info }) => {
-    // versionInfo.isDownloading = true
-    // console.log(info)
+  const rUpdateAvailable = onUpdateAvailable(({ params: info }: any) => {
     versionInfo.newVersion = {
       version: info.version,
       desc: info.releaseNotes as string,
@@ -159,12 +183,8 @@ export default () => {
       showUpdateModal()
     })
   })
-  const rUpdateNotAvailable = onUpdateNotAvailable(({ params: info }) => {
+  const rUpdateNotAvailable = onUpdateNotAvailable(({ params: info }: any) => {
     clearUpdateTimeout()
-    // versionInfo.newVersion = {
-    //   version: info.version,
-    //   desc: info.releaseNotes as string,
-    // }
     void handleGetVersionInfo().finally(() => {
       versionInfo.isLatest = true
       versionInfo.isUnknown = false
@@ -172,25 +192,23 @@ export default () => {
       handleShowChangeLog()
     })
   })
-  const rUpdateError = onUpdateError((params) => {
+  const rUpdateError = onUpdateError((params: any) => {
     clearUpdateTimeout()
-    // versionInfo.status = 'error'
     void nextTick(() => {
       showUpdateModal('error')
     })
   })
-  const rUpdateProgress = onUpdateProgress(({ params: progress }) => {
+  const rUpdateProgress = onUpdateProgress(({ params: progress }: any) => {
     versionInfo.downloadProgress = progress
   })
-  const rUpdateDownloaded = onUpdateDownloaded(({ params: info }) => {
+  const rUpdateDownloaded = onUpdateDownloaded(({ params: info }: any) => {
     clearUpdateTimeout()
-    // versionInfo.status = 'downloaded'
     void nextTick(() => {
       showUpdateModal('downloaded')
     })
   })
 
-  watch(() => versionInfo.showModal, (visible) => {
+  watch(() => versionInfo.showModal, (visible: boolean) => {
     if (visible || isShowedChangeLog || versionInfo.status == 'downloaded') return
     setTimeout(() => {
       handleShowChangeLog()
