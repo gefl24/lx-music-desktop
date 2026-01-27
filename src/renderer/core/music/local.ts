@@ -1,9 +1,9 @@
 // Mock modules
 const encodePath = (path: string) => path
-const updateListMusics = async() => {}
-const saveLyric = async() => {}
-const saveMusicUrl = async() => {}
-const getLocalFilePath = async() => null
+const updateListMusics = async(musics: any[]) => {}
+const saveLyric = async(musicInfo: any, lyricInfo: any) => {}
+const saveMusicUrl = async(musicInfo: any, quality: string, url: string) => {}
+const getLocalFilePath = async(musicInfo: any) => null
 
 import {
   buildLyricInfo,
