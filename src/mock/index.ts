@@ -221,9 +221,19 @@ export const vueTools = {
   watch: () => () => {},
   ref: (value: any) => ({ value }),
   onBeforeUnmount: () => {},
+  onMounted: () => {},
   markRaw: (value: any) => value,
   markRawList: (list: any[]) => list,
 }
+
+// Export vueTools functions for direct imports
+export const computed = (fn: Function) => ({ value: fn() })
+export const watch = () => () => {}
+export const ref = (value: any) => ({ value })
+export const onBeforeUnmount = () => {}
+export const onMounted = () => {}
+export const markRaw = (value: any) => value
+export const markRawList = (list: any[]) => list
 
 // Mock vueRouter module
 export const vueRouter = {
@@ -356,6 +366,20 @@ export const common = {
       filterMusicList: (list: any[]) => list,
       clipNameLength: (name: string) => name,
       clipFileNameLength: (name: string) => name,
+      joinPath: (...paths: string[]) => paths.join('/'),
+      arrPushByPosition: (arr: any[], item: any, position: number) => arr,
+      arrShuffle: (arr: any[]) => arr,
+    },
+    musicMeta: {
+      parseMusicMeta: async() => ({}),
+    },
+    download: {
+      downloadFile: async() => ({}),
+    },
+    nodejs: {
+      saveStrToFile: async() => {},
+      readLxConfigFile: async() => ({}),
+      saveLxConfigFile: async() => {},
     },
   },
   hotKey: {
@@ -365,6 +389,16 @@ export const common = {
     LIST_IDS: {
       PLAY_LATER: 'play_later',
     },
+    SPLIT_CHAR: '|',
+    filterFileName: (name: string) => name,
+    sortInsert: (arr: any[], item: any) => arr,
+    similar: (a: string, b: string) => 0,
+    arrPushByPosition: (arr: any[], item: any, position: number) => arr,
+    arrShuffle: (arr: any[]) => arr,
+    joinPath: (...paths: string[]) => paths.join('/'),
+    clipNameLength: (name: string) => name,
+    clipFileNameLength: (name: string) => name,
+    createLocalMusicInfo: (path: string) => ({}),
   },
   ipcNames: {
     WIN_MAIN_RENDERER_EVENT_NAME: {
@@ -375,6 +409,11 @@ export const common = {
       add_dislike_music_infos: 'add_dislike_music_infos',
       overwrite_dislike_music_infos: 'overwrite_dislike_music_infos',
       clear_dislike_music_infos: 'clear_dislike_music_infos',
+    },
+  },
+  defaultSetting: {
+    common: {
+      langId: 'en-us',
     },
   },
 }
@@ -503,14 +542,6 @@ export const core = {
         isFromCache: false,
       }),
       getOtherSource: async() => [],
-      getOnlineOtherSourceLyricByLocal: async() => ({
-        lyricInfo: {
-          lyric: '',
-          tlrc: '',
-          rlrc: '',
-        },
-        isFromCache: false,
-      }),
     },
   },
 }
@@ -537,9 +568,57 @@ export const sources = []
 export const workerMainTypes = {}
 export const workerDownloadTypes = {}
 
+// Mock worker utils module
+export const createMainWorker = () => ({
+  getMusicFilePic: async() => null,
+  getMusicFileLyric: async() => null,
+  langS2t: async() => '',
+})
+
+export const createDownloadWorker = () => ({})
+
+export const proxyCallback = (callback: Function) => callback
+
+// Mock simplify-chinese-main module
+const tranditionalize = (str: string) => str
+const saveLxConfigFile = async() => {}
+const readLxConfigFile = async() => ({})
+const saveStrToFile = async(filePath: string, content: any) => {}
+
+// Mock music utils module
+const getLocalMusicFileLyric = async(filePath: string) => null
+const getLocalMusicFilePic = async(filePath: string) => null
+const checkPath = async(path: string) => true
+
+// Mock electron module
+const ipcMain = {
+  on: (name: string, listener: Function) => {},
+  once: (name: string, listener: Function) => {},
+  removeListener: (name: string, listener: Function) => {},
+  removeAllListeners: (name: string) => {},
+  handle: (name: string, listener: Function) => {},
+  handleOnce: (name: string, listener: Function) => {},
+  removeHandler: (name: string) => {},
+}
+
+declare namespace Electron {
+  type IpcMainEvent = any
+  type WebContents = any
+  type BrowserWindow = {
+    webContents: {
+      send: (name: string, params?: any) => void
+    }
+  }
+  type OpenDialogOptions = any
+  type OpenDialogReturnValue = any
+  type SaveDialogOptions = any
+  type SaveDialogReturnValue = any
+}
+
 // Mock I18n type
 export type I18n = {
   locale: string
+  t: (key: string) => string
 }
 
 // Export all as default
@@ -569,4 +648,64 @@ export default {
   sources,
   workerMainTypes,
   workerDownloadTypes,
+  tranditionalize,
+  saveLxConfigFile,
+  readLxConfigFile,
+  saveStrToFile,
+  getLocalMusicFileLyric,
+  getLocalMusicFilePic,
+  checkPath,
+  ipcMain,
 }
+
+// Export individual functions for direct imports
+export { tranditionalize, saveLxConfigFile, readLxConfigFile, saveStrToFile, getLocalMusicFileLyric, getLocalMusicFilePic, checkPath, ipcMain }
+
+// Export utility functions for direct imports
+export const filterFileName = (name: string) => name
+export const similar = (a: string, b: string) => 0
+export const sortInsert = (arr: any[], data: any) => arr
+export const arrPushByPosition = (arr: any[], item: any, position: number) => arr
+export const arrShuffle = (arr: any[]) => arr
+export const clipNameLength = (name: string) => name
+export const clipFileNameLength = (name: string) => name
+export const joinPath = (...paths: string[]) => paths.join('/')
+export const createLocalMusicInfo = (path: string) => ({
+  id: '',
+  name: '',
+  singer: '',
+  album: '',
+  lrc: '',
+  tlrc: '',
+  rlrc: '',
+  lxlrc: '',
+  meta: {
+    picUrl: '',
+    albumName: '',
+    interval: '00:00',
+    _qualitys: {},
+    qualitys: [],
+  },
+  source: 'local',
+  url: '',
+  cover: '',
+  lyricInfo: {
+    lyric: '',
+    tlrc: '',
+    rlrc: '',
+  },
+})
+
+// Export constants
+export const SPLIT_CHAR = {
+  DISLIKE_NAME: '@',
+  DISLIKE_NAME_ALIAS: '#',
+}
+export const DOWNLOAD_STATUS = {
+  RUN: 'run',
+  WAITING: 'waiting',
+  PAUSE: 'pause',
+  ERROR: 'error',
+  COMPLETED: 'completed',
+}
+export const QUALITYS = ['flac24bit', 'flac', 'wav', 'ape', '320k', '192k', '128k']
